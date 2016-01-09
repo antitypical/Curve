@@ -39,6 +39,11 @@ instance Eq1 f => Eq (Unification f) where
   (Conflict a1 b1) == (Conflict a2 b2) = a1 == b1 && a2 == b2
   _ == _ = False
 
+instance Show1 f => Show (Unification f) where
+  showsPrec i (Unification out) rest = showsPrec1 i out rest
+  showsPrec _ (Conflict a b) out = "Expected: " ++ show a ++ "\n"
+                                ++ "  Actual: " ++ show b ++ "\n" ++ out
+
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
