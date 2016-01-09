@@ -9,6 +9,7 @@ data Name
 data Expression term
   = Type
   | Implicit
+  | Variable Name
   | Lambda term term
   | Application term term
   deriving (Show, Eq, Functor, Foldable)
