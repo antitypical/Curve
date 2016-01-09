@@ -34,6 +34,11 @@ instance Show1 f => Show (Term f) where
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
 
+instance Eq1 f => Eq (Unification f) where
+  (Unification a) == (Unification b) = a `eq1` b
+  (Conflict a1 b1) == (Conflict a2 b2) = a1 == b1 && a2 == b2
+  _ == _ = False
+
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
