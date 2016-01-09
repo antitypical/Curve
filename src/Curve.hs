@@ -9,5 +9,7 @@ data Expression term
   deriving (Show, Eq, Functor, Foldable)
 
 data Term f = Term (f (Term f))
+type Term' = Term Expression
 
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
+type Unification' = Unification Expression
