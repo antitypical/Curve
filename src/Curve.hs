@@ -23,6 +23,10 @@ type Unification' = Unification Expression
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
+unified :: Unification' -> Maybe Term'
+unified (Unification _) = Nothing
+unified (Conflict _ _) = Nothing
+
 
 rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
