@@ -12,3 +12,6 @@ main = hspec $ do
   describe "unify" $ do
     prop "_ with x" $
       \ term -> term `unify` Term Implicit `shouldBe` into term
+
+    prop "x with _" $
+      \ term -> Term Implicit `unify` term `shouldBe` into term
