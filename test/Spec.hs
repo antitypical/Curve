@@ -27,3 +27,9 @@ main = hspec $ do
 
     prop "reflexivity" $
       \ term -> unify term term `shouldBe` into term
+
+    prop "symmetry" $
+      \ a b -> a `unify` b `shouldBe` flipUnification (b `unify` a)
+
+  where flipUnification (Conflict a b) = Conflict b a
+        flipUnification (Unification out) = Unification $ flipUnification <$> out
