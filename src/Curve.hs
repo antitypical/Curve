@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
 module Curve where
 
 data Expression term
@@ -5,6 +6,7 @@ data Expression term
   | Implicit
   | Lambda term term
   | Application term term
+  deriving (Show, Eq, Functor, Foldable)
 
 data Term f = Term (f (Term f))
 
