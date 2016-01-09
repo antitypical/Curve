@@ -77,8 +77,8 @@ instance Show1 f => Show (Term f) where
   showsPrec i = showsPrec1 i . out
 
 instance Eq1 f => Eq (Unification f) where
-  (Unification a) == (Unification b) = a `eq1` b
-  (Conflict a1 b1) == (Conflict a2 b2) = a1 == b1 && a2 == b2
+  Unification a == Unification b = a `eq1` b
+  Conflict a1 b1 == Conflict a2 b2 = a1 == b1 && a2 == b2
   _ == _ = False
 
 instance Show1 f => Show (Unification f) where
