@@ -23,6 +23,12 @@ type Unification' = Unification Expression
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
+
+rename :: Name -> Name -> Term' -> Term'
+rename old new term = case out term of
+  _ -> term
+
+
 unify :: Term' -> Term' -> Unification'
 unify expected actual = case (out expected, out actual) of
   (_, Implicit) -> into expected
