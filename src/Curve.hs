@@ -1,7 +1,6 @@
 {-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
 module Curve where
 
-import Data.EqBy
 import Data.Functor.Classes
 
 data Name
@@ -16,16 +15,6 @@ data Expression term
   | Lambda Int term term
   | Application term term
   deriving (Show, Eq, Functor, Foldable)
-
-instance EqBy Expression where
-  eqBy by a b = case (a, b) of
-    (Type, Type) -> True
-    (Implicit, Implicit) -> True
-    (Variable a, Variable b) | a == b -> True
-    (Lambda i1 t1 b1, Lambda i2 t2 b2) -> i1 == i2 && by t1 t2 && by b1 b2
-    (Application a1 b1, Application a2 b2) -> by a1 a2 && by b1 b2
-    _ -> False
-
 
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
