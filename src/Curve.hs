@@ -74,6 +74,7 @@ substitute name withTerm inScope = case out inScope of
 unify :: Term' -> Term' -> Unification'
 unify expected actual = case (out expected, out actual) of
   (_, Implicit) -> into expected
+  (Implicit, _) -> into actual
 
   (Type, Type) -> into expected
 
