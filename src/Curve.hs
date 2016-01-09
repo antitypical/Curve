@@ -31,6 +31,7 @@ rename old new term = case out term of
   Lambda name t b -> if name == old
     then Term $ Lambda name (rename old new t) b
     else Term $ Lambda name (rename old new t) (rename old new b)
+  Application a b -> Term $ Application (rename old new a) (rename old new b)
   _ -> term
 
 
