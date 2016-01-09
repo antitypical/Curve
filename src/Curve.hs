@@ -22,5 +22,6 @@ unify expected actual = case (out expected, out actual) of
   (_, Implicit) -> into expected
 
   (Type, Type) -> into expected
+  (Application a1 b1, Application a2 b2) -> Unification $ Application (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
