@@ -21,4 +21,6 @@ unify :: Term' -> Term' -> Unification'
 unify expected actual = case (out expected, out actual) of
   (_, Implicit) -> into expected
 
+  (Type, Type) -> into expected
+
   _ -> Conflict expected actual
