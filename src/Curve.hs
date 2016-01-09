@@ -25,6 +25,7 @@ into term = Unification $ into <$> out term
 
 
 rename :: Name -> Name -> Term' -> Term'
+rename old new term | old == new = term
 rename old new term = case out term of
   _ -> term
 
