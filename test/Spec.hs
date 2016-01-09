@@ -11,6 +11,7 @@ instance Arbitrary (Term Expression) where
   arbitrary = inScope []
     where inScope names = frequency $
               (4, pure (Term Type))
+            : (4, pure (Term Implicit))
             : ((,) 4 . pure . Term . Variable <$> names)
 
 main :: IO ()
