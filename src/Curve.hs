@@ -16,3 +16,7 @@ type Unification' = Unification Expression
 
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
+
+unify :: Term' -> Term' -> Unification'
+unify expected actual = case (out expected, out actual) of
+  _ -> Conflict expected actual
