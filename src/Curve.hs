@@ -28,6 +28,9 @@ type Term' = Term Expression
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
 
+instance Show1 f => Show (Term f) where
+  showsPrec i = showsPrec1 i . out
+
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
 
