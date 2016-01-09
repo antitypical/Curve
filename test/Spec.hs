@@ -4,6 +4,9 @@ import Test.Hspec.QuickCheck
 import Test.QuickCheck
 import Curve
 
+instance Arbitrary Name where
+  arbitrary = oneof [ Local <$> arbitrary, Global <$> arbitrary ]
+
 instance Arbitrary (Term Expression) where
   arbitrary = elements [ Term Type ]
 
