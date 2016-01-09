@@ -28,6 +28,9 @@ rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
 rename old new term = case out term of
   Variable (Local name) | name == old -> Term $ Variable $ Local new
+  Lambda name t b -> if name == old
+    then Term $ Lambda name (rename old new t) b
+    else Term $ Lambda name (rename old new t) (rename old new b)
   _ -> term
 
 
