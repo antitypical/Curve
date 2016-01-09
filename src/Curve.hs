@@ -16,33 +16,11 @@ data Expression term
   | Application term term
   deriving (Show, Eq, Functor, Foldable, Traversable)
 
-instance Eq1 Expression where
-  eq1 = (==)
-
-instance Show1 Expression where
-  showsPrec1 = showsPrec
-
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
-instance Eq1 f => Eq (Term f) where
-  a == b = out a `eq1` out b
-
-instance Show1 f => Show (Term f) where
-  showsPrec i = showsPrec1 i . out
-
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
-
-instance Eq1 f => Eq (Unification f) where
-  (Unification a) == (Unification b) = a `eq1` b
-  (Conflict a1 b1) == (Conflict a2 b2) = a1 == b1 && a2 == b2
-  _ == _ = False
-
-instance Show1 f => Show (Unification f) where
-  showsPrec i (Unification out) rest = showsPrec1 i out rest
-  showsPrec _ (Conflict a b) out = "Expected: " ++ show a ++ "\n"
-                                ++ "  Actual: " ++ show b ++ "\n" ++ out
 
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
@@ -83,3 +61,27 @@ unify expected actual = case (out expected, out actual) of
   (Lambda i1 a1 b1, Lambda i2 a2 b2) | i1 == i2 -> Unification $ Lambda i2 (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
+
+
+instance Eq1 Expression where
+  eq1 = (==)
+
+instance Show1 Expression where
+  showsPrec1 = showsPrec
+
+
+instance Eq1 f => Eq (Term f) where
+  a == b = out a `eq1` out b
+
+instance Show1 f => Show (Term f) where
+  showsPrec i = showsPrec1 i . out
+
+instance Eq1 f => Eq (Unification f) where
+  (Unification a) == (Unification b) = a `eq1` b
+  (Conflict a1 b1) == (Conflict a2 b2) = a1 == b1 && a2 == b2
+  _ == _ = False
+
+instance Show1 f => Show (Unification f) where
+  showsPrec i (Unification out) rest = showsPrec1 i out rest
+  showsPrec _ (Conflict a b) out = "Expected: " ++ show a ++ "\n"
+                                ++ "  Actual: " ++ show b ++ "\n" ++ out
