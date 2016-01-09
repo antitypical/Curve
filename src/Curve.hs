@@ -4,6 +4,7 @@ module Curve where
 data Name
   = Local Int
   | Global String
+  deriving (Show, Eq)
 
 data Expression term
   = Type
