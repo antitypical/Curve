@@ -38,7 +38,7 @@ into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
 unified :: Unification' -> Maybe Term'
-unified (Unification _) = Nothing
+unified (Unification expression) = Term <$> traverse unified expression
 unified (Conflict _ _) = Nothing
 
 
