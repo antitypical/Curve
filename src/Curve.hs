@@ -40,6 +40,7 @@ substitute name withTerm inScope = case out inScope of
   Lambda n inType inBody -> if n == name
     then Term $ Lambda n (substitute name withTerm inType) inBody
     else Term $ Lambda n (substitute name withTerm inType) (substitute name withTerm inBody)
+  Application inA inB -> Term $ Application (substitute name withTerm inA) (substitute name withTerm inB)
   _ -> inScope
 
 unify :: Term' -> Term' -> Unification'
