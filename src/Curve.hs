@@ -16,6 +16,10 @@ data Expression term
   | Application term term
   deriving (Show, Eq, Functor, Foldable)
 
+instance Eq1 Expression where
+  eq1 = (==)
+
+
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
