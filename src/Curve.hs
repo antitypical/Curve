@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
 module Curve where
 
 import Data.Functor.Classes
@@ -14,7 +14,7 @@ data Expression term
   | Variable Name
   | Lambda Int term term
   | Application term term
-  deriving (Show, Eq, Functor, Foldable)
+  deriving (Show, Eq, Functor, Foldable, Traversable)
 
 instance Eq1 Expression where
   eq1 = (==)
