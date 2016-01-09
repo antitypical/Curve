@@ -26,13 +26,13 @@ into term = Unification $ into <$> out term
 
 rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
-rename old new term = case out term of
-  Variable (Local name) | name == old -> Term $ Variable $ Local new
+rename old new term = Term $ case out term of
+  Variable (Local name) | name == old -> Variable $ Local new
   Lambda name t b -> if name == old
-    then Term $ Lambda name (rename old new t) b
-    else Term $ Lambda name (rename old new t) (rename old new b)
-  Application a b -> Term $ Application (rename old new a) (rename old new b)
-  _ -> term
+    then Lambda name (rename old new t) b
+    else Lambda name (rename old new t) (rename old new b)
+  Application a b -> Application (rename old new a) (rename old new b)
+  other -> other
 
 
 unify :: Term' -> Term' -> Unification'
