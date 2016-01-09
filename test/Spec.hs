@@ -8,7 +8,10 @@ instance Arbitrary Name where
   arbitrary = oneof [ Local <$> arbitrary, Global <$> arbitrary ]
 
 instance Arbitrary (Term Expression) where
-  arbitrary = elements [ Term Type ]
+  arbitrary = inScope []
+    where inScope names = frequency $
+              (4, pure (Term Type))
+            : ((,) 4 . pure . Term . Variable <$> names)
 
 main :: IO ()
 main = hspec $ do
