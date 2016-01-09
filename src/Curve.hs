@@ -24,10 +24,10 @@ into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
 
-rename :: Name -> Name -> Term' -> Term'
+rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
 rename old new term = case out term of
-  Variable name | name == old -> Term $ Variable new
+  Variable (Local name) | name == old -> Term $ Variable $ Local new
   _ -> term
 
 
