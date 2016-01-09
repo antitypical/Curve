@@ -2,6 +2,7 @@
 module Curve where
 
 import Data.EqBy
+import Data.Functor.Classes
 
 data Name
   = Local Int
@@ -29,8 +30,8 @@ instance EqBy Expression where
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
-instance EqBy f => Eq (Term f) where
-  a == b = eqBy (==) (out a) (out b)
+instance Eq1 f => Eq (Term f) where
+  a == b = out a `eq1` out b
 
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
