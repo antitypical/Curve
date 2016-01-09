@@ -10,5 +10,5 @@ instance Arbitrary (Term Expression) where
 main :: IO ()
 main = hspec $ do
   describe "unify" $ do
-    prop "_ unifies with anything" $
-      \ term -> unified (term `unify` Term Implicit) `shouldBe` Just term
+    prop "_ with x" $
+      \ term -> term `unify` Term Implicit `shouldBe` into term
