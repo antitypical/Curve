@@ -19,6 +19,8 @@ data Expression term
 instance Eq1 Expression where
   eq1 = (==)
 
+instance Show1 Expression where
+  showsPrec1 = showsPrec
 
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
