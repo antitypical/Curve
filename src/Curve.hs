@@ -10,7 +10,7 @@ data Expression term
   = Type
   | Implicit
   | Variable Name
-  | Lambda term term
+  | Lambda Int term term
   | Application term term
   deriving (Show, Eq, Functor, Foldable)
 
@@ -29,6 +29,6 @@ unify expected actual = case (out expected, out actual) of
 
   (Type, Type) -> into expected
   (Application a1 b1, Application a2 b2) -> Unification $ Application (unify a1 a2) (unify b1 b2)
-  (Lambda a1 b1, Lambda a2 b2) -> Unification $ Lambda (unify a1 a2) (unify b1 b2)
+  (Lambda i1 a1 b1, Lambda i2 a2 b2) | i1 == i2 -> Unification $ Lambda i2 (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
