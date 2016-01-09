@@ -37,6 +37,9 @@ rename old new term = Term $ case out term of
 substitute :: Int -> Term' -> Term' -> Term'
 substitute name withTerm inScope = case out inScope of
   Variable (Local n) | n == name -> withTerm
+  Lambda n t b -> if n == name
+    then Term $ Lambda n (substitute name withTerm t) b
+    else Term $ Lambda n (substitute name withTerm t) (substitute name withTerm b)
   _ -> inScope
 
 unify :: Term' -> Term' -> Unification'
