@@ -13,3 +13,6 @@ type Term' = Term Expression
 
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
+
+into :: Functor f => Term f -> Unification f
+into term = Unification $ into <$> out term
