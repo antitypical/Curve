@@ -24,3 +24,6 @@ main = hspec $ do
 
     prop "x with _" $
       \ term -> Term Implicit `unify` term `shouldBe` into term
+
+    prop "reflexivity" $
+      \ term -> unify term term `shouldBe` into term
