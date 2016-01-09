@@ -1,6 +1,10 @@
 {-# LANGUAGE DeriveFunctor, DeriveFoldable #-}
 module Curve where
 
+data Name
+  = Local Int
+  | Global String
+
 data Expression term
   = Type
   | Implicit
