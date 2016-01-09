@@ -1,7 +1,9 @@
 module Curve where
 
-data Term
+data Expression term
   = Type
   | Implicit
-  | Lambda Term Term
-  | Application Term Term
+  | Lambda term term
+  | Application term term
+
+data Term f = Term (f (Term f))
