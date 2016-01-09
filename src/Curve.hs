@@ -34,6 +34,9 @@ rename old new term = Term $ case out term of
   Application a b -> Application (rename old new a) (rename old new b)
   other -> other
 
+substitute :: Int -> Term' -> Term' -> Term'
+substitute name withTerm inScope = Term $ case out inScope of
+  other -> other
 
 unify :: Term' -> Term' -> Unification'
 unify expected actual = case (out expected, out actual) of
