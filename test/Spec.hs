@@ -63,5 +63,8 @@ main = hspec $ do
     prop "pretty-prints Implicit as _ at any level and precedence" $
       \ isType prec -> showsLevelPrec isType prec (Term Implicit) "" `shouldBe` "_"
 
+    prop "pretty-prints local variables alphabetically" $
+      \ i -> show (Term $ Variable $ Local i) `shouldBe` showNumeral ['a'..'z'] i
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
