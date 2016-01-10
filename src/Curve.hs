@@ -95,6 +95,12 @@ freeVariables = cata inExpression
           Application a b -> a `Set.union` b
           _ -> mempty
 
+maxBoundVariable :: Term' -> Maybe Int
+maxBoundVariable = cata (\ expression -> case expression of
+  Lambda n t _ -> max (Just n) t
+  Application a b -> max a b
+  _ -> Nothing)
+
 
 -- Recursion schemes
 
