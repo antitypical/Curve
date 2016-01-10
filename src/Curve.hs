@@ -73,7 +73,7 @@ into term = Unification $ into <$> out term
 
 unified :: Unification' -> Maybe Term'
 unified (Unification expression) = Term <$> traverse unified expression
-unified (Conflict _ _) = Nothing
+unified _ = Nothing
 
 
 -- Binding
