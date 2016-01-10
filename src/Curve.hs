@@ -2,6 +2,7 @@
 module Curve where
 
 import Data.Functor.Classes
+import qualified Data.List as List
 import qualified Data.Set as Set
 
 data Name
@@ -81,6 +82,20 @@ cata f = f . fmap (cata f) . out
 para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
 para f = f . fmap fanout . out
   where fanout a = (a, para f a)
+
+
+-- Numerals
+
+digits :: Integral a => a -> a -> [a]
+digits base i = fst $ foldr nextDigit ([], i) (replicate (fromIntegral $ countDigits base i) ())
+  where nextDigit _ (list, prev) | (next, remainder) <- prev `divMod` base = (remainder : list, next)
+
+countDigits :: Integral a => a -> a -> a
+countDigits base i = 1 + floor (logBase (fromIntegral base) (fromIntegral $ abs i) :: Double)
+
+showNumeral :: Integral i => String -> i -> String
+showNumeral "" _ = ""
+showNumeral alphabet i = List.genericIndex alphabet <$> digits (List.genericLength alphabet) i
 
 
 -- Instances
