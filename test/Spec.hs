@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+import qualified Data.Set as Set
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck
@@ -30,6 +31,10 @@ main = hspec $ do
 
     prop "symmetry" $
       \ a b -> a `unify` b `shouldBe` flipUnification (b `unify` a)
+
+  describe "freeVariables" $ do
+    prop "variables are free in themselves" $
+      \ name -> freeVariables (Term (Variable name)) `shouldBe` Set.singleton name
 
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out

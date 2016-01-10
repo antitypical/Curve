@@ -27,6 +27,7 @@ test-suite Curve-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , containers
                      , Curve
                      , hspec
                      , QuickCheck
