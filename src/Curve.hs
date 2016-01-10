@@ -96,7 +96,7 @@ showsLevelPrec isType n term = case out term of
     where prec = 10
   Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . showsLevel isType t  . showString " . " . showsLevel isType body
   Lambda _ t body -> if isType
-    then showsLevel isType t . showString " → " . showsLevel isType body
+    then showsLevelPrec isType 1 t . showString " → " . showsLevel isType body
     else showString "λ _ : " . showsLevel isType t  . showString " . " . showsLevel isType body
 
 showsLevel :: Bool -> Term' -> ShowS
