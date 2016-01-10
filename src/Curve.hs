@@ -4,6 +4,7 @@ module Curve where
 import Data.Functor.Classes
 import qualified Data.List as List
 import qualified Data.Set as Set
+import qualified Data.Map as Map
 
 data Name
   = Local Int
@@ -113,6 +114,8 @@ maxBoundVariable = cata (\ expression -> case expression of
 
 
 -- Typechecking
+
+type Context = Map.Map Name Term'
 
 
 -- Equality
