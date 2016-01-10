@@ -30,12 +30,6 @@ class Catamorphable r where
 
   para :: Functor f => (f (r f, a) -> a) -> r f -> a
 
-instance Unroll r => Catamorphable r where
-  cata f = f . fmap (cata f) . unroll
-
-  para f = f . fmap fanout . unroll
-    where fanout a = (a, para f a)
-
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
@@ -236,3 +230,9 @@ instance Unroll Term where
 
 instance Roll Unification where
   roll = Unification
+
+instance Unroll r => Catamorphable r where
+  cata f = f . fmap (cata f) . unroll
+
+  para f = f . fmap fanout . unroll
+    where fanout a = (a, para f a)
