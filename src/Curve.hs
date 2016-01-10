@@ -116,6 +116,7 @@ maxBoundVariable = cata (\ expression -> case expression of
 -- Typechecking
 
 type Context = Map.Map Name Term'
+type Inferer = Context -> Unification'
 
 
 -- Equality
