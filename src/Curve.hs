@@ -94,8 +94,9 @@ showsLevel isType n term = case out term of
   Implicit -> showString "Implicit"
   Application a b -> showParen (n > 10) (showsPrec 10 a . showString " " . showsPrec 11 b)
   Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . shows t  . showString " . " . shows body
-  Lambda _ t body -> showString "λ _ : " . shows t  . showString " . " . shows body
-  -- Lambda _ t body -> (shows t " → " ++ body, 0)
+  Lambda _ t body -> if isType
+    then shows t . showString " → " . shows body
+    else showString "λ _ : " . shows t  . showString " . " . shows body
 
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
