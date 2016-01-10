@@ -31,13 +31,13 @@ type Unification' = Unification Expression
 
 -- DSL for constructing terms
 
-type' :: Roll f => f Expression
+type' :: Roll r => r Expression
 type' = roll Type
 
-implicit :: Roll f => f Expression
+implicit :: Roll r => r Expression
 implicit = roll Implicit
 
-variable :: Roll f => Name -> f Expression
+variable :: Roll r => Name -> r Expression
 variable = roll . Variable
 
 local :: Int -> Term'
