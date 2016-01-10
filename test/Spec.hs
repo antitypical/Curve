@@ -44,15 +44,15 @@ main = hspec $ do
     prop "lambdas are shadowing" $
       \ name t b -> freeVariables (Term (Lambda name t b)) `shouldSatisfy` Set.notMember (Local name)
 
-  describe "showsLevel" $ do
+  describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " (" ++ showsPrec 10 (Term $ Application b c) ")"
 
     prop "shows non-dependent function types with an arrow operator" $
-      \ a b -> showsLevel True 0 (Term $ Lambda 0 a b) "" `shouldBe` shows a " → " ++ show b
+      \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` shows a " → " ++ show b
 
     prop "parentheses left-nested non-dependent function types" $
-      \ a b c -> showsLevel True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevel True 0 (Term $ Lambda 1 a b) ") → " ++  show c
+      \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++  show c
 
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out

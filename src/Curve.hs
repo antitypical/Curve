@@ -85,10 +85,10 @@ instance Eq1 Expression where
   eq1 = (==)
 
 instance Show Term' where
-  showsPrec = showsLevel False
+  showsPrec = showsLevelPrec False
 
-showsLevel :: Bool -> Int -> Term' -> ShowS
-showsLevel isType n term = case out term of
+showsLevelPrec :: Bool -> Int -> Term' -> ShowS
+showsLevelPrec isType n term = case out term of
   Variable name -> shows name
   Type -> showString "Type"
   Implicit -> showString "Implicit"
