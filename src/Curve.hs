@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances #-}
 module Curve where
 
 import Data.Functor.Classes
@@ -84,22 +84,31 @@ para f = f . fmap fanout . out
 instance Eq1 Expression where
   eq1 = (==)
 
-instance Show1 Expression where
-  showsPrec1 = showsPrec
+instance Show Term' where
+  showsPrec precedence term = (para showTerm term ++)
+    where showTerm expression = case expression of
+            Variable n -> show n
+
+            Type -> "Type"
+
+            Application (_, a) (_, b) -> a ++ " " ++ b
+
+            Lambda i (_, t) (body, bodyString) | Set.member (Local i) (freeVariables body) -> "λ " ++ show (Local i) ++ " : " ++ t ++ " . " ++ bodyString
+            Lambda _ (_, t) (_, body) -> "λ _ : " ++ t ++ " . " ++ body
+            -- Lambda _ t body -> t ++ " → " ++ body
+
+            Implicit -> "_"
 
 
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
-
-instance Show1 f => Show (Term f) where
-  showsPrec i = showsPrec1 i . out
 
 instance Eq1 f => Eq (Unification f) where
   Unification a == Unification b = a `eq1` b
   Conflict a1 b1 == Conflict a2 b2 = a1 == a2 && b1 == b2
   _ == _ = False
 
-instance Show1 f => Show (Unification f) where
-  showsPrec i (Unification out) rest = showsPrec1 i out rest
-  showsPrec _ (Conflict a b) out = "Expected: " ++ show a ++ "\n"
-                                ++ "  Actual: " ++ show b ++ "\n" ++ out
+instance Show Unification' where
+  show (Unification out) = show out
+  show (Conflict a b) = "Expected: " ++ show a ++ "\n"
+                     ++ "  Actual: " ++ show b ++ "\n"
