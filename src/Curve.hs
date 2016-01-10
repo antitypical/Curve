@@ -53,7 +53,7 @@ infixr `lambda`
 lambda :: Term' -> (Term' -> Term') -> Term'
 lambda t f = Term $ Lambda i t body
   where i = maybe 0 succ $ maxBoundVariable body
-        body = f (Term $ Variable $ Local i)
+        body = f (local i)
 
 infixr -->
 
