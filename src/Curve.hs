@@ -220,3 +220,6 @@ instance Show Unification' where
   show (Conflict a b) = "Expected: " ++ show a ++ "\n"
                      ++ "  Actual: " ++ show b ++ "\n"
   show (Error s) = "Error: " ++ s
+
+instance Roll Term where
+  roll = Term
