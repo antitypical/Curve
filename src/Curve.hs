@@ -25,6 +25,9 @@ class Roll g where
 class Unroll r where
   unroll :: r f -> f (r f)
 
+class PartialUnroll r where
+  unrollMaybe :: r f -> Maybe (f (r f))
+
 class Catamorphable r where
   cata :: Functor f => (f a -> a) -> r f -> a
 
