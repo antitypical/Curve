@@ -66,6 +66,10 @@ unify expected actual = case (out expected, out actual) of
 cata :: Functor f => (f a -> a) -> Term f -> a
 cata f = f . fmap (cata f) . out
 
+para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
+para f = f . fmap fanout . out
+  where fanout a = (a, para f a)
+
 
 instance Eq1 Expression where
   eq1 = (==)
