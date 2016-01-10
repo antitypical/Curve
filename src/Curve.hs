@@ -43,7 +43,7 @@ variable = roll . Variable
 local :: Roll r => Int -> r Expression
 local = variable . Local
 
-global :: String -> Term'
+global :: Roll r => String -> r Expression
 global = variable . Global
 
 infixl 9 `apply`
