@@ -231,5 +231,8 @@ instance Show Unification' where
 instance Roll Term where
   roll = Term
 
+instance Unroll Term where
+  unroll = out
+
 instance Roll Unification where
   roll = Unification
