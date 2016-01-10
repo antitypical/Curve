@@ -33,6 +33,9 @@ type' = Term Type
 implicit :: Term'
 implicit = Term Implicit
 
+variable :: Name -> Term'
+variable = Term . Variable
+
 apply :: Term' -> Term' -> Term'
 apply a = Term . Application a
 
