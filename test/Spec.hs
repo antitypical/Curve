@@ -51,7 +51,7 @@ main = hspec $ do
     prop "shows non-dependent function types with an arrow operator" $
       \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevelPrec True 1 a " → " ++ showsLevel True b ""
 
-    prop "shows lambda types at type level" $
+    prop "shows lambda’s annotations at type level" $
       \ a b c -> show (Term $ Lambda 1 (Term $ Lambda 0 a b) c) `shouldBe` "λ _ : " ++ showsLevelPrec True 1 a " → " ++ showsLevel True b " . " ++ show c
 
     prop "parentheses left-nested non-dependent function types" $
