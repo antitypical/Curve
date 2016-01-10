@@ -23,7 +23,6 @@ data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
 data Unification f term = Unification (f (Unification f term)) | Conflict term term | Error String
-  deriving Functor
 type Unification' = Unification Expression Term'
 
 
