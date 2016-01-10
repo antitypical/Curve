@@ -51,7 +51,7 @@ apply a = roll . Application a
 infixr `lambda`
 
 lambda :: Term' -> (Term' -> Term') -> Term'
-lambda t f = Term $ Lambda i t body
+lambda t f = roll $ Lambda i t body
   where i = maybe 0 succ $ maxBoundVariable body
         body = f (local i)
 
