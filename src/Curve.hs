@@ -95,7 +95,7 @@ showsLevelPrec isType n term = case out term of
   Application a b -> showParen (n > prec) (showsLevelPrec isType prec a . showString " " . showsLevelPrec isType (prec + 1) b)
     where prec = 10
   Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . showsLevel isType t  . showString " . " . showsLevel isType body
-  Lambda _ t body -> if isType
+  Lambda _ t body -> showParen (n > 0) $ if isType
     then showsLevelPrec isType 1 t . showString " → " . showsLevel isType body
     else showString "λ _ : " . showsLevel isType t  . showString " . " . showsLevel isType body
 
