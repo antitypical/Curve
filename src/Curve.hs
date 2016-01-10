@@ -22,6 +22,9 @@ data Expression term
 class Roll g where
   roll :: f (g f) -> g f
 
+class Catamorphable r where
+  cata :: Functor f => (f a -> a) -> r f -> a
+
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
@@ -152,8 +155,8 @@ unify expected actual = case (out expected, out actual) of
 
 -- Recursion schemes
 
-cata :: Functor f => (f a -> a) -> Term f -> a
-cata f = f . fmap (cata f) . out
+instance Catamorphable Term where
+  cata f = f . fmap (cata f) . out
 
 para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
 para f = f . fmap fanout . out
