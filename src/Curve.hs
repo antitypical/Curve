@@ -19,6 +19,9 @@ data Expression term
   | Application term term
   deriving (Show, Eq, Functor, Foldable, Traversable)
 
+class Roll g where
+  roll :: f (g f) -> g f
+
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
