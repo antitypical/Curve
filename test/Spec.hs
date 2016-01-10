@@ -19,6 +19,7 @@ instance Arbitrary (Term Expression) where
 
   shrink term = case out term of
     Application a b -> a : b : shrink a ++ shrink b ++ (Term <$> (Application <$> a : shrink a <*> b : shrink b))
+    Lambda i t b -> t : b : shrink t ++ shrink b ++ (Term <$> (Lambda i <$> t : shrink t <*> b : shrink b))
     _ -> []
 
 main :: IO ()
