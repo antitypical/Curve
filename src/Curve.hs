@@ -147,9 +147,6 @@ unify expected actual = case (out expected, out actual) of
   _ -> Conflict expected actual
 
 
--- Recursion schemes
-
-
 -- Numerals
 
 digits :: Integral a => a -> a -> [a]
