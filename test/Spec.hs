@@ -69,7 +69,7 @@ main = hspec $ do
     it "should format the identity function appropriately" $
       show (Term $ Lambda 1 type' $ Term $ Lambda 0 (local 1) (local 0)) `shouldBe` "λ b : Type . λ a : b . a"
 
-  describe "DSL" $
+  describe "DSL" $ do
     prop "apply associates leftwards" $
       \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` c
 
