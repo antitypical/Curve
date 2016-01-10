@@ -57,7 +57,7 @@ lambda t f = roll $ Lambda i t body
 
 infixr -->
 
-(-->) :: Term' -> Term' -> Term'
+(-->) :: (Roll r, PartialUnroll r) => r Expression -> r Expression -> r Expression
 a --> b = a `lambda` const b
 
 infixr `pi`
