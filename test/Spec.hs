@@ -48,5 +48,8 @@ main = hspec $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " (" ++ showsPrec 10 (Term $ Application b c) ")"
 
+    prop "shows non-dependent function types with an arrow operator" $
+      \ a b -> showsLevel True 0 (Term $ Lambda 0 a b) "" `shouldBe` shows a " → " ++ show b
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
