@@ -106,11 +106,11 @@ freeVariables = cata inExpression
           Application a b -> a `Set.union` b
           _ -> mempty
 
-maxBoundVariable :: Catamorphable r => r Expression -> Maybe Int
-maxBoundVariable = cata (\ expression -> case expression of
-  Lambda n t _ -> max (Just n) t
-  Application a b -> max a b
-  _ -> Nothing)
+maxBoundVariable :: PartialUnroll r => r Expression -> Maybe Int
+maxBoundVariable = foldl maximal Nothing . unrollMaybe
+  where maximal into (Lambda i t _) = max into $ max (Just i) (maxBoundVariable t)
+        maximal into (Application a b) = max into $ max (maxBoundVariable a) (maxBoundVariable b)
+        maximal into _ = into
 
 
 -- Typechecking
