@@ -85,19 +85,14 @@ instance Eq1 Expression where
   eq1 = (==)
 
 instance Show Term' where
-  showsPrec precedence term = (para showTerm term ++)
-    where showTerm expression = case expression of
-            Variable n -> show n
-
-            Type -> "Type"
-
-            Application (_, a) (_, b) -> a ++ " " ++ b
-
-            Lambda i (_, t) (body, bodyString) | Set.member (Local i) (freeVariables body) -> "λ " ++ show (Local i) ++ " : " ++ t ++ " . " ++ bodyString
-            Lambda _ (_, t) (_, body) -> "λ _ : " ++ t ++ " . " ++ body
-            -- Lambda _ t body -> t ++ " → " ++ body
-
-            Implicit -> "_"
+  showsPrec n term rest = case out term of
+    Variable name -> showsPrec n name rest
+    Type -> "Type" ++ rest
+    Implicit -> "Implicit" ++ rest
+    Application a b -> showsPrec 10 a " " ++ showsPrec 10 b rest
+    Lambda i t body | Set.member (Local i) (freeVariables body) -> "λ " ++ shows (Local i) " : " ++ shows t " . " ++ shows body rest
+    Lambda _ t body -> "λ _ : " ++ shows t " . " ++ shows body rest
+    -- Lambda _ t body = shows t " → " ++ body
 
 
 instance Eq1 f => Eq (Term f) where
