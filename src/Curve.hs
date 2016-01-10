@@ -88,13 +88,13 @@ rename old new term = Term $ case out term of
   Application a b -> Application (rename old new a) (rename old new b)
   other -> other
 
-substitute :: Int -> Term' -> Term' -> Term'
-substitute name withTerm inScope = case out inScope of
-  Variable (Local n) | n == name -> withTerm
-  Lambda n inType inBody -> if n == name
-    then Term $ Lambda n (substitute name withTerm inType) inBody
-    else Term $ Lambda n (substitute name withTerm inType) (substitute name withTerm inBody)
-  Application inA inB -> Term $ Application (substitute name withTerm inA) (substitute name withTerm inB)
+substitute :: (Roll r, PartialUnroll r) => Int -> r Expression -> r Expression -> r Expression
+substitute name withTerm inScope = case unrollMaybe inScope of
+  Just (Variable (Local n)) | n == name -> withTerm
+  Just (Lambda n inType inBody) -> if n == name
+    then roll $ Lambda n (substitute name withTerm inType) inBody
+    else roll $ Lambda n (substitute name withTerm inType) (substitute name withTerm inBody)
+  Just (Application inA inB) -> roll $ Application (substitute name withTerm inA) (substitute name withTerm inB)
   _ -> inScope
 
 
