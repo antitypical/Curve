@@ -28,6 +28,11 @@ class Unroll r where
 class Catamorphable r where
   cata :: Functor f => (f a -> a) -> r f -> a
 
+  para :: (Unroll r, Functor f) => (f (r f, a) -> a) -> r f -> a
+  para f = f . fmap fanout . unroll
+    where fanout a = (a, para f a)
+
+
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
@@ -160,10 +165,6 @@ unify expected actual = case (out expected, out actual) of
 
 instance Catamorphable Term where
   cata f = f . fmap (cata f) . out
-
-para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
-para f = f . fmap fanout . out
-  where fanout a = (a, para f a)
 
 
 -- Numerals
