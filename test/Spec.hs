@@ -66,5 +66,8 @@ main = hspec $ do
     prop "pretty-prints local variables alphabetically" $
       \ i -> show (Term $ Variable $ Local i) `shouldBe` showNumeral ['a'..'z'] i
 
+    it "should format the identity function appropriately" $
+      show (Term $ Lambda 1 (Term Type) $ Term $ Lambda 0 (Term (Variable (Local 1))) (Term (Variable (Local 0)))) `shouldBe` "λ b : Type . λ a : b . a"
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
