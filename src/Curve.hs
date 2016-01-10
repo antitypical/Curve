@@ -234,6 +234,9 @@ instance Unroll Term where
 instance Roll Unification where
   roll = Unification
 
+instance Unroll r => PartialUnroll r where
+  unrollMaybe = Just . unroll
+
 instance Unroll r => Catamorphable r where
   cata f = f . fmap (cata f) . unroll
 
