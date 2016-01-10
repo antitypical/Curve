@@ -31,8 +31,8 @@ type Unification' = Unification Expression
 
 -- DSL for constructing terms
 
-type' :: Term'
-type' = Term Type
+type' :: Roll f => f Expression
+type' = roll Type
 
 implicit :: Term'
 implicit = Term Implicit
