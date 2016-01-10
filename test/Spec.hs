@@ -76,5 +76,8 @@ main = hspec $ do
     prop "--> associates rightwards" $
       \ a b c -> a --> b --> c `shouldBe` a --> (b --> c)
 
+    it "lambda avoids shadowing" $
+      show (type' `lambda` \ b -> b `lambda` id) `shouldBe` "λ b : Type . λ a : b . a"
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
