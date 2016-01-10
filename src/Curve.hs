@@ -94,10 +94,10 @@ showsLevelPrec isType n term = case out term of
   Implicit -> showString "_"
   Application a b -> showParen (n > prec) (showsLevelPrec isType prec a . showString " " . showsLevelPrec isType (prec + 1) b)
     where prec = 10
-  Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . showsLevel isType t  . showString " . " . showsLevel isType body
+  Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . showsLevel True t  . showString " . " . showsLevel isType body
   Lambda _ t body -> showParen (n > 0) $ if isType
-    then showsLevelPrec isType 1 t . showString " → " . showsLevel isType body
-    else showString "λ _ : " . showsLevel isType t  . showString " . " . showsLevel isType body
+    then showsLevelPrec True 1 t . showString " → " . showsLevel True body
+    else showString "λ _ : " . showsLevel True t  . showString " . " . showsLevel isType body
 
 showsLevel :: Bool -> Term' -> ShowS
 showsLevel level = showsLevelPrec level 0
