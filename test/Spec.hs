@@ -49,16 +49,16 @@ main = hspec $ do
       \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (Term $ Application b c) ")"
 
     prop "shows non-dependent function types with an arrow operator" $
-      \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevelPrec True 1 a " → " ++ showsLevel True b ""
+      \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevelPrec True 1 a " → " ++ showsType b ""
 
     prop "shows lambda’s annotations at type level" $
-      \ a b c -> show (Term $ Lambda 1 (Term $ Lambda 0 a b) c) `shouldBe` "λ _ : " ++ showsLevelPrec True 1 a " → " ++ showsLevel True b " . " ++ show c
+      \ a b c -> show (Term $ Lambda 1 (Term $ Lambda 0 a b) c) `shouldBe` "λ _ : " ++ showsLevelPrec True 1 a " → " ++ showsType b " . " ++ show c
 
     prop "shows dependent function types with a binding arrow operator" $
-      \ a n -> showsLevel True (Term $ Lambda n a (Term $ Variable $ Local n)) "" `shouldBe` "(" ++ shows (Local n) " : " ++ showsLevel True a ") → " ++ showsLevel True (Term $ Variable $ Local n) ""
+      \ a n -> showsType (Term $ Lambda n a (Term $ Variable $ Local n)) "" `shouldBe` "(" ++ shows (Local n) " : " ++ showsType a ") → " ++ showsType (Term $ Variable $ Local n) ""
 
     prop "parentheses left-nested non-dependent function types" $
-      \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++ showsLevel True c ""
+      \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++ showsType c ""
 
     prop "pretty-prints Implicit as _ at any level and precedence" $
       \ isType prec -> showsLevelPrec isType prec (Term Implicit) "" `shouldBe` "_"
