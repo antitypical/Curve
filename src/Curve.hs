@@ -81,6 +81,8 @@ para f = f . fmap fanout . out
   where fanout a = (a, para f a)
 
 
+-- Instances
+
 instance Eq1 Expression where
   eq1 = (==)
 
