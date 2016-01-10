@@ -3,6 +3,7 @@ module Curve where
 
 import Data.Functor.Classes
 import qualified Data.List as List
+import qualified Data.Maybe as Maybe
 import qualified Data.Set as Set
 
 data Name
@@ -45,7 +46,7 @@ infixr `lambda`
 
 lambda :: Term' -> (Term' -> Term') -> Term'
 lambda t f = Term $ Lambda i t body
-  where i = maybe 0 id $ maxBoundVariable body
+  where i = Maybe.fromMaybe 0 $ maxBoundVariable body
         body = f (Term $ Variable $ Local i)
 
 
