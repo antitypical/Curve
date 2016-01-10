@@ -73,6 +73,8 @@ freeVariables = cata inExpression
           _ -> mempty
 
 
+-- Recursion schemes
+
 cata :: Functor f => (f a -> a) -> Term f -> a
 cata f = f . fmap (cata f) . out
 
