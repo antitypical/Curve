@@ -48,8 +48,8 @@ global = variable . Global
 
 infixl 9 `apply`
 
-apply :: Term' -> Term' -> Term'
-apply a = Term . Application a
+apply :: Roll r => r Expression -> r Expression -> r Expression
+apply a = roll . Application a
 
 infixr `lambda`
 
