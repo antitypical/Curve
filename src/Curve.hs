@@ -98,6 +98,9 @@ showsLevelPrec isType n term = case out term of
     then shows t . showString " → " . shows body
     else showString "λ _ : " . shows t  . showString " . " . shows body
 
+showsLevel :: Bool -> Term' -> ShowS
+showsLevel level = showsLevelPrec level 0
+
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
 
