@@ -18,7 +18,7 @@ instance Arbitrary (Term Expression) where
             : ((,) 4 . pure . Term . Variable <$> names)
 
   shrink term = case out term of
-    Application a b -> a : b : shrink a ++ shrink b
+    Application a b -> a : b : shrink a ++ shrink b ++ (Term <$> (Application <$> a : shrink a <*> b : shrink b))
     _ -> []
 
 main :: IO ()
