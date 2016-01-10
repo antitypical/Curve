@@ -112,6 +112,9 @@ maxBoundVariable = cata (\ expression -> case expression of
   _ -> Nothing)
 
 
+-- Typechecking
+
+
 -- Equality
 
 unify :: Term' -> Term' -> Unification'
