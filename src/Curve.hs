@@ -85,15 +85,14 @@ instance Eq1 Expression where
   eq1 = (==)
 
 instance Show Term' where
-  showsPrec n term rest = wrap $ case out term of
-    Variable name -> (show name, 11)
-    Type -> ("Type", 11)
-    Implicit -> ("Implicit", 11)
-    Application a b -> (showsPrec 10 a " " ++ showsPrec 11 b "", 10)
-    Lambda i t body | Set.member (Local i) (freeVariables body) -> ("λ " ++ shows (Local i) " : " ++ shows t " . " ++ show body, 0)
-    Lambda _ t body -> ("λ _ : " ++ shows t " . " ++ show body, 0)
+  showsPrec n term = case out term of
+    Variable name -> shows name
+    Type -> showString "Type"
+    Implicit -> showString "Implicit"
+    Application a b -> showParen (n > 10) (showsPrec 10 a . showString " " . showsPrec 11 b)
+    Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . shows t  . showString " . " . shows body
+    Lambda _ t body -> showString "λ _ : " . shows t  . showString " . " . shows body
     -- Lambda _ t body -> (shows t " → " ++ body, 0)
-    where wrap (string, m) = showParen (m < n) (showString string) rest
 
 
 instance Eq1 f => Eq (Term f) where
