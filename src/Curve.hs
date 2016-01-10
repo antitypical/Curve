@@ -239,3 +239,7 @@ instance Unroll r => Catamorphable r where
 
   para f = f . fmap fanout . unroll
     where fanout a = (a, para f a)
+
+instance PartialUnroll Unification where
+  unrollMaybe (Unification expression) = Just expression
+  unrollMaybe _ = Nothing
