@@ -49,7 +49,7 @@ main = hspec $ do
       \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (Term $ Application b c) ")"
 
     prop "shows non-dependent function types with an arrow operator" $
-      \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevel True a " → " ++ showsLevel True b ""
+      \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevelPrec True 1 a " → " ++ showsLevel True b ""
 
     prop "parentheses left-nested non-dependent function types" $
       \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++ showsLevel True c ""
