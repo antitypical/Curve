@@ -30,6 +30,9 @@ type Unification' = Unification Expression
 type' :: Term'
 type' = Term Type
 
+implicit :: Term'
+implicit = Term Implicit
+
 
 -- Unifications
 
