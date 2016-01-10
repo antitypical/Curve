@@ -46,7 +46,7 @@ main = hspec $ do
 
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
-      \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c) ")"
+      \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
 
     prop "shows non-dependent function types with an arrow operator" $
       \ a b -> showsLevelPrec True 0 (Term $ Lambda 0 a b) "" `shouldBe` showsLevelPrec True 1 a " → " ++ showsType b ""
@@ -64,20 +64,20 @@ main = hspec $ do
       \ isType prec -> showsLevelPrec isType prec implicit "" `shouldBe` "_"
 
     prop "pretty-prints local variables alphabetically" $
-      \ i -> show (local i) `shouldBe` showNumeral ['a'..'z'] i
+      \ i -> show (local i :: Term') `shouldBe` showNumeral ['a'..'z'] i
 
     it "should format the identity function appropriately" $
       show (Term $ Lambda 1 type' $ Term $ Lambda 0 (local 1) (local 0)) `shouldBe` "λ b : Type . λ a : b . a"
 
   describe "DSL" $ do
     prop "apply associates leftwards" $
-      \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` c
+      \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` (c :: Term')
 
     prop "--> associates rightwards" $
-      \ a b c -> a --> b --> c `shouldBe` a --> (b --> c)
+      \ a b c -> a --> b --> c `shouldBe` a --> (b --> c :: Term')
 
     it "lambda avoids shadowing" $
-      show (type' `lambda` \ b -> b `lambda` id) `shouldBe` "λ b : Type . λ a : b . a"
+      show (type' `lambda` \ b -> b `lambda` id :: Term') `shouldBe` "λ b : Type . λ a : b . a"
 
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
