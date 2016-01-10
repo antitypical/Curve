@@ -59,6 +59,8 @@ infixr -->
 (-->) :: Term' -> Term' -> Term'
 a --> b = a `lambda` const b
 
+infixr `pi`
+
 pi :: Term' -> (Term' -> Term') -> Term'
 pi = lambda
 
