@@ -37,8 +37,8 @@ type' = roll Type
 implicit :: Roll f => f Expression
 implicit = roll Implicit
 
-variable :: Name -> Term'
-variable = Term . Variable
+variable :: Roll f => Name -> f Expression
+variable = roll . Variable
 
 local :: Int -> Term'
 local = variable . Local
