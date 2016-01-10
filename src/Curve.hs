@@ -203,3 +203,4 @@ instance Show Unification' where
   show (Unification out) = show out
   show (Conflict a b) = "Expected: " ++ show a ++ "\n"
                      ++ "  Actual: " ++ show b ++ "\n"
+  show (Error s) = "Error: " ++ s
