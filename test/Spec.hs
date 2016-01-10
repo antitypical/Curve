@@ -39,5 +39,9 @@ main = hspec $ do
     prop "lambdas are shadowing" $
       \ name t b -> freeVariables (Term (Lambda name t b)) `shouldSatisfy` Set.notMember (Local name)
 
+  describe "show" $ do
+    prop "parenthesizes right-nested applications" $
+      \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " " ++ show (Term $ Application b c) ++ ")"
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
