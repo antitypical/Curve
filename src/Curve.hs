@@ -24,6 +24,9 @@ type Term' = Term Expression
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
 
+
+-- Unifications
+
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
@@ -31,6 +34,8 @@ unified :: Unification' -> Maybe Term'
 unified (Unification expression) = Term <$> traverse unified expression
 unified (Conflict _ _) = Nothing
 
+
+-- Binding
 
 rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
