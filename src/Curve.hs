@@ -63,6 +63,10 @@ unify expected actual = case (out expected, out actual) of
   _ -> Conflict expected actual
 
 
+cata :: Functor f => (f a -> a) -> Term f -> a
+cata f = f . fmap (cata f) . out
+
+
 instance Eq1 Expression where
   eq1 = (==)
 
