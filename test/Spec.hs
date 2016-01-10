@@ -17,6 +17,9 @@ instance Arbitrary (Term Expression) where
             : (1, Term <$> (Lambda (length names) <$> inScope names <*> inScope (Local (length names) : names)))
             : ((,) 4 . pure . Term . Variable <$> names)
 
+  shrink term = case out term of
+    _ -> []
+
 main :: IO ()
 main = hspec $ do
   describe "unify" $ do
