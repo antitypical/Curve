@@ -34,8 +34,8 @@ type Unification' = Unification Expression
 type' :: Roll f => f Expression
 type' = roll Type
 
-implicit :: Term'
-implicit = Term Implicit
+implicit :: Roll f => f Expression
+implicit = roll Implicit
 
 variable :: Name -> Term'
 variable = Term . Variable
