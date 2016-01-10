@@ -49,6 +49,10 @@ lambda t f = Term $ Lambda i t body
         body = f (Term $ Variable $ Local i)
 
 
+(-->) :: Term' -> Term' -> Term'
+a --> b = a `lambda` const b
+
+
 -- Unifications
 
 into :: Functor f => Term f -> Unification f
