@@ -142,8 +142,8 @@ unify expected actual = case (out expected, out actual) of
 
   (Type, Type) -> into expected
 
-  (Variable n1, Variable n2) | n1 == n2 -> Unification $ Variable n2
-  (Application a1 b1, Application a2 b2) -> Unification $ Application (unify a1 a2) (unify b1 b2)
+  (Variable n1, Variable n2) | n1 == n2 -> variable n2
+  (Application a1 b1, Application a2 b2) -> unify a1 a2 `apply` unify b1 b2
   (Lambda i1 a1 b1, Lambda i2 a2 b2) | i1 == i2 -> Unification $ Lambda i2 (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
