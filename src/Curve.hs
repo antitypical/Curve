@@ -117,6 +117,12 @@ maxBoundVariable = cata (\ expression -> case expression of
 
 type Context = Map.Map Name Term'
 
+check :: Term' -> Context -> Term' -> Unification'
+check expected context term = case (out term, out expected) of
+  (_, Implicit) -> Error $ "No rule to infer type of " ++ show term
+  (_, _) -> let unification = infer context term in
+    maybe unification (unify expected) $ unified unification
+
 
 -- Equality
 
