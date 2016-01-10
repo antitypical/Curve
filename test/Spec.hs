@@ -51,5 +51,8 @@ main = hspec $ do
     prop "shows non-dependent function types with an arrow operator" $
       \ a b -> showsLevel True 0 (Term $ Lambda 0 a b) "" `shouldBe` shows a " → " ++ show b
 
+    prop "parentheses left-nested non-dependent function types" $
+      \ a b c -> showsLevel True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevel True 0 (Term $ Lambda 1 a b) ") → " ++  show c
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
