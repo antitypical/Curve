@@ -27,6 +27,9 @@ type Unification' = Unification Expression
 
 -- DSL for constructing terms
 
+type' :: Term'
+type' = Term Type
+
 
 -- Unifications
 
