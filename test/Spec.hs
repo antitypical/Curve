@@ -36,5 +36,8 @@ main = hspec $ do
     prop "variables are free in themselves" $
       \ name -> freeVariables (Term (Variable name)) `shouldBe` Set.singleton name
 
+    prop "lambdas are shadowing" $
+      \ name t b -> freeVariables (Term (Lambda name t b)) `shouldSatisfy` Set.notMember (Local name)
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
