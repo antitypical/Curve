@@ -92,11 +92,11 @@ showsLevelPrec isType n term = case out term of
   Variable name -> shows name
   Type -> showString "Type"
   Implicit -> showString "Implicit"
-  Application a b -> showParen (n > 10) (showsPrec 10 a . showString " " . showsPrec 11 b)
+  Application a b -> showParen (n > 10) (showsLevelPrec isType 10 a . showString " " . showsLevelPrec isType 11 b)
   Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . shows t  . showString " . " . shows body
   Lambda _ t body -> if isType
-    then shows t . showString " → " . shows body
-    else showString "λ _ : " . shows t  . showString " . " . shows body
+    then showsLevel isType t . showString " → " . showsLevel isType body
+    else showString "λ _ : " . showsLevel isType t  . showString " . " . showsLevel isType body
 
 showsLevel :: Bool -> Term' -> ShowS
 showsLevel level = showsLevelPrec level 0
