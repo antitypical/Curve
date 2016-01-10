@@ -94,6 +94,8 @@ instance Show Term' where
     Lambda _ t body -> showString "λ _ : " . shows t  . showString " . " . shows body
     -- Lambda _ t body -> (shows t " → " ++ body, 0)
 
+showLevel :: Bool -> Term' -> ShowS
+showLevel = const . shows
 
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
