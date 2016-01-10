@@ -22,6 +22,9 @@ data Expression term
 class Roll g where
   roll :: f (g f) -> g f
 
+class Unroll r where
+  unroll :: r f -> f (r f)
+
 class Catamorphable r where
   cata :: Functor f => (f a -> a) -> r f -> a
 
