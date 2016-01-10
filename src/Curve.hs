@@ -50,7 +50,7 @@ apply a = roll . Application a
 
 infixr `lambda`
 
-lambda :: Term' -> (Term' -> Term') -> Term'
+lambda :: (Roll r, PartialUnroll r) => r Expression -> (r Expression -> r Expression) -> r Expression
 lambda t f = roll $ Lambda i t body
   where i = maybe 0 succ $ maxBoundVariable body
         body = f (local i)
