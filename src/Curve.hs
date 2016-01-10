@@ -126,6 +126,8 @@ check expected context term = case (out term, out expected) of
 
   (Variable name, Implicit) -> maybe (Error $ "unexpectedly free variable " ++ show name) into (Map.lookup name context)
 
+  (Lambda i t body, Implicit) -> unify t type' `lambda` \ v -> substitute i v (into body)
+
   (_, Implicit) -> Error $ "No rule to infer type of " ++ show term
   (_, _) -> let unification = infer context term in
     maybe unification (unify expected) $ unified unification
