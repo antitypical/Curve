@@ -40,7 +40,7 @@ implicit = roll Implicit
 variable :: Roll r => Name -> r Expression
 variable = roll . Variable
 
-local :: Int -> Term'
+local :: Roll r => Int -> r Expression
 local = variable . Local
 
 global :: String -> Term'
