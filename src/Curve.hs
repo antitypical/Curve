@@ -25,6 +25,9 @@ data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f
 type Unification' = Unification Expression
 
 
+-- DSL for constructing terms
+
+
 -- Unifications
 
 into :: Functor f => Term f -> Unification f
