@@ -73,5 +73,8 @@ main = hspec $ do
     prop "apply associates leftwards" $
       \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` c
 
+    prop "--> associates rightwards" $
+      \ a b c -> a --> b --> c `shouldBe` a --> (b --> c)
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
