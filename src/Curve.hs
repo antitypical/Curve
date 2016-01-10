@@ -24,6 +24,49 @@ type Term' = Term Expression
 data Unification f = Unification (f (Unification f)) | Conflict (Term f) (Term f)
 type Unification' = Unification Expression
 
+
+-- DSL for constructing terms
+
+type' :: Term'
+type' = Term Type
+
+implicit :: Term'
+implicit = Term Implicit
+
+variable :: Name -> Term'
+variable = Term . Variable
+
+local :: Int -> Term'
+local = variable . Local
+
+global :: String -> Term'
+global = variable . Global
+
+infixl 9 `apply`
+
+apply :: Term' -> Term' -> Term'
+apply a = Term . Application a
+
+infixr `lambda`
+
+lambda :: Term' -> (Term' -> Term') -> Term'
+lambda t f = Term $ Lambda i t body
+  where i = maybe 0 succ $ maxBoundVariable body
+        body = f (Term $ Variable $ Local i)
+
+infixr -->
+
+(-->) :: Term' -> Term' -> Term'
+a --> b = a `lambda` const b
+
+infixr `pi`
+
+pi :: Term' -> (Term' -> Term') -> Term'
+pi = lambda
+
+
+-- Unifications
+
 into :: Functor f => Term f -> Unification f
 into term = Unification $ into <$> out term
 
@@ -31,6 +74,8 @@ unified :: Unification' -> Maybe Term'
 unified (Unification expression) = Term <$> traverse unified expression
 unified (Conflict _ _) = Nothing
 
+
+-- Binding
 
 rename :: Int -> Int -> Term' -> Term'
 rename old new term | old == new = term
@@ -72,6 +117,12 @@ freeVariables = cata inExpression
           Lambda i t b -> Set.delete (Local i) b `Set.union` t
           Application a b -> a `Set.union` b
           _ -> mempty
+
+maxBoundVariable :: Term' -> Maybe Int
+maxBoundVariable = cata (\ expression -> case expression of
+  Lambda n t _ -> max (Just n) t
+  Application a b -> max a b
+  _ -> Nothing)
 
 
 -- Recursion schemes
