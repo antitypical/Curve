@@ -54,5 +54,8 @@ main = hspec $ do
     prop "parentheses left-nested non-dependent function types" $
       \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++ showsLevel True c ""
 
+    prop "pretty-prints Implicit as _ at any level and precedence" $
+      \ isType prec -> showsLevelPrec isType prec (Term Implicit) "" `shouldBe` "_"
+
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
