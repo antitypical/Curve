@@ -81,3 +81,4 @@ main = hspec $ do
 
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
+        flipUnification otherwise = otherwise
