@@ -41,7 +41,7 @@ main = hspec $ do
 
   describe "show" $ do
     prop "parenthesizes right-nested applications" $
-      \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " " ++ show (Term $ Application b c) ++ ")"
+      \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " (" ++ show (Term $ Application b c) ++ ")"
 
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
