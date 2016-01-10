@@ -8,7 +8,7 @@ import qualified Data.Set as Set
 data Name
   = Local Int
   | Global String
-  deriving (Show, Eq, Ord)
+  deriving (Eq, Ord)
 
 data Expression term
   = Type
@@ -99,6 +99,10 @@ showNumeral alphabet i = List.genericIndex alphabet <$> digits (List.genericLeng
 
 
 -- Instances
+
+instance Show Name where
+  show (Local i) = showNumeral ['a'..'z'] i
+  show (Global s) = s
 
 instance Eq1 Expression where
   eq1 = (==)
