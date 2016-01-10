@@ -1,4 +1,4 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances, UndecidableInstances #-}
 module Curve where
 
 import Data.Functor.Classes
@@ -32,6 +32,8 @@ class Catamorphable r where
   para f = f . fmap fanout . unroll
     where fanout a = (a, para f a)
 
+instance Unroll r => Catamorphable r where
+  cata f = f . fmap (cata f) . unroll
 
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
@@ -162,9 +164,6 @@ unify expected actual = case (out expected, out actual) of
 
 
 -- Recursion schemes
-
-instance Catamorphable Term where
-  cata f = f . fmap (cata f) . out
 
 
 -- Numerals
