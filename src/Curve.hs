@@ -19,20 +19,6 @@ data Expression term
   | Application term term
   deriving (Show, Eq, Functor, Foldable, Traversable)
 
-class Roll g where
-  roll :: f (g f) -> g f
-
-class Unroll r where
-  unroll :: r f -> f (r f)
-
-class PartialUnroll r where
-  unrollMaybe :: r f -> Maybe (f (r f))
-
-class Catamorphable r where
-  cata :: Functor f => (f a -> a) -> r f -> a
-
-  para :: Functor f => (f (r f, a) -> a) -> r f -> a
-
 data Term f = Term { out :: f (Term f) }
 type Term' = Term Expression
 
@@ -176,6 +162,23 @@ countDigits base i = 1 + floor (logBase (fromIntegral base) (fromIntegral $ abs 
 showNumeral :: Integral i => String -> i -> String
 showNumeral "" _ = ""
 showNumeral alphabet i = List.genericIndex alphabet <$> digits (List.genericLength alphabet) i
+
+
+-- Classes
+
+class Roll g where
+  roll :: f (g f) -> g f
+
+class Unroll r where
+  unroll :: r f -> f (r f)
+
+class PartialUnroll r where
+  unrollMaybe :: r f -> Maybe (f (r f))
+
+class Catamorphable r where
+  cata :: Functor f => (f a -> a) -> r f -> a
+
+  para :: Functor f => (f (r f, a) -> a) -> r f -> a
 
 
 -- Instances
