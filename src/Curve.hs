@@ -59,6 +59,9 @@ infixr -->
 (-->) :: Term' -> Term' -> Term'
 a --> b = a `lambda` const b
 
+pi :: Term' -> (Term' -> Term') -> Term'
+pi = lambda
+
 
 -- Unifications
 
