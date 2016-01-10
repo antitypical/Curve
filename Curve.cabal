@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Curve
   build-depends:       base >= 4.7 && < 5
+                     , containers
                      , transformers
   default-language:    Haskell2010
   ghc-options:         -Wall -fno-warn-name-shadowing -threaded -rtsopts -with-rtsopts=-N
@@ -26,6 +27,7 @@ test-suite Curve-test
   hs-source-dirs:      test
   main-is:             Spec.hs
   build-depends:       base
+                     , containers
                      , Curve
                      , hspec
                      , QuickCheck

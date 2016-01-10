@@ -1,12 +1,14 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances #-}
 module Curve where
 
 import Data.Functor.Classes
+import qualified Data.List as List
+import qualified Data.Set as Set
 
 data Name
   = Local Int
   | Global String
-  deriving (Show, Eq)
+  deriving (Eq, Ord)
 
 data Expression term
   = Type
@@ -63,25 +65,80 @@ unify expected actual = case (out expected, out actual) of
   _ -> Conflict expected actual
 
 
+freeVariables :: Term' -> Set.Set Name
+freeVariables = cata inExpression
+  where inExpression expression = case expression of
+          Variable name -> Set.singleton name
+          Lambda i t b -> Set.delete (Local i) b `Set.union` t
+          Application a b -> a `Set.union` b
+          _ -> mempty
+
+
+-- Recursion schemes
+
+cata :: Functor f => (f a -> a) -> Term f -> a
+cata f = f . fmap (cata f) . out
+
+para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
+para f = f . fmap fanout . out
+  where fanout a = (a, para f a)
+
+
+-- Numerals
+
+digits :: Integral a => a -> a -> [a]
+digits base i = fst $ foldr nextDigit ([], i) (replicate (fromIntegral $ countDigits base i) ())
+  where nextDigit _ (list, prev) | (next, remainder) <- prev `divMod` base = (remainder : list, next)
+
+countDigits :: Integral a => a -> a -> a
+countDigits base i = 1 + floor (logBase (fromIntegral base) (fromIntegral $ abs i) :: Double)
+
+showNumeral :: Integral i => String -> i -> String
+showNumeral "" _ = ""
+showNumeral alphabet i = List.genericIndex alphabet <$> digits (List.genericLength alphabet) i
+
+
+-- Instances
+
+instance Show Name where
+  show (Local i) = showNumeral ['a'..'z'] i
+  show (Global s) = s
+
 instance Eq1 Expression where
   eq1 = (==)
 
-instance Show1 Expression where
-  showsPrec1 = showsPrec
+instance Show Term' where
+  showsPrec = showsLevelPrec False
 
+showsLevelPrec :: Bool -> Int -> Term' -> ShowS
+showsLevelPrec isType n term = case out term of
+  Variable name -> shows name
+  Type -> showString "Type"
+  Implicit -> showString "_"
+  Application a b -> showParen (n > prec) (showsLevelPrec isType prec a . showString " " . showsLevelPrec isType (prec + 1) b)
+    where prec = 10
+  Lambda i t body | Set.member (Local i) (freeVariables body) -> if isType
+    then showString "(" . shows (Local i) . showString " : " . showsType t . showString ") → " . showsType body
+    else showString "λ " . shows (Local i) . showString " : " . showsType t  . showString " . " . showsLevel isType body
+  Lambda _ t body -> showParen (n > 0) $ if isType
+    then showsLevelPrec True 1 t . showString " → " . showsType body
+    else showString "λ _ : " . showsType t  . showString " . " . showsLevel isType body
+
+showsLevel :: Bool -> Term' -> ShowS
+showsLevel level = showsLevelPrec level 0
+
+showsType :: Term' -> ShowS
+showsType = showsLevel True
 
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
-
-instance Show1 f => Show (Term f) where
-  showsPrec i = showsPrec1 i . out
 
 instance Eq1 f => Eq (Unification f) where
   Unification a == Unification b = a `eq1` b
   Conflict a1 b1 == Conflict a2 b2 = a1 == a2 && b1 == b2
   _ == _ = False
 
-instance Show1 f => Show (Unification f) where
-  showsPrec i (Unification out) rest = showsPrec1 i out rest
-  showsPrec _ (Conflict a b) out = "Expected: " ++ show a ++ "\n"
-                                ++ "  Actual: " ++ show b ++ "\n" ++ out
+instance Show Unification' where
+  show (Unification out) = show out
+  show (Conflict a b) = "Expected: " ++ show a ++ "\n"
+                     ++ "  Actual: " ++ show b ++ "\n"
