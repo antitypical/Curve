@@ -49,6 +49,8 @@ lambda t f = Term $ Lambda i t body
         body = f (Term $ Variable $ Local i)
 
 
+infixr -->
+
 (-->) :: Term' -> Term' -> Term'
 a --> b = a `lambda` const b
 
