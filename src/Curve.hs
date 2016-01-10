@@ -231,11 +231,11 @@ instance Roll Term where
 instance Unroll Term where
   unroll = out
 
+instance PartialUnroll Term where
+  unrollMaybe = Just . unroll
+
 instance Roll Unification where
   roll = Unification
-
-instance Unroll r => PartialUnroll r where
-  unrollMaybe = Just . unroll
 
 instance Unroll r => Catamorphable r where
   cata f = f . fmap (cata f) . unroll
