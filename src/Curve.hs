@@ -36,6 +36,8 @@ implicit = Term Implicit
 variable :: Name -> Term'
 variable = Term . Variable
 
+infixl `apply`
+
 apply :: Term' -> Term' -> Term'
 apply a = Term . Application a
 
