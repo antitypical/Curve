@@ -196,6 +196,7 @@ instance Eq1 f => Eq (Term f) where
 instance Eq1 f => Eq (Unification f) where
   Unification a == Unification b = a `eq1` b
   Conflict a1 b1 == Conflict a2 b2 = a1 == a2 && b1 == b2
+  Error s1 == Error s2 = s1 == s2
   _ == _ = False
 
 instance Show Unification' where
