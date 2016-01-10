@@ -70,6 +70,7 @@ freeVariables = cata inExpression
           Variable name -> Set.singleton name
           Lambda i t b -> Set.delete (Local i) b `Set.union` t
           Application a b -> a `Set.union` b
+          _ -> mempty
 
 
 cata :: Functor f => (f a -> a) -> Term f -> a
