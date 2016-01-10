@@ -41,6 +41,11 @@ infixl 9 `apply`
 apply :: Term' -> Term' -> Term'
 apply a = Term . Application a
 
+lambda :: Term' -> (Term' -> Term') -> Term'
+lambda t f = Term $ Lambda i t body
+  where i = maybe 0 id $ maxBoundVariable body
+        body = f (Term $ Variable $ Local i)
+
 
 -- Unifications
 
