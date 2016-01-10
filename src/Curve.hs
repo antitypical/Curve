@@ -39,6 +39,9 @@ variable = Term . Variable
 local :: Int -> Term'
 local = variable . Local
 
+global :: String -> Term'
+global = variable . Global
+
 infixl 9 `apply`
 
 apply :: Term' -> Term' -> Term'
