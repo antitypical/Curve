@@ -54,7 +54,6 @@ lambda t f = Term $ Lambda i t body
   where i = maybe 0 succ $ maxBoundVariable body
         body = f (Term $ Variable $ Local i)
 
-
 infixr -->
 
 (-->) :: Term' -> Term' -> Term'
