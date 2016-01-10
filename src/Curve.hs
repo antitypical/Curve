@@ -2,6 +2,7 @@
 module Curve where
 
 import Data.Functor.Classes
+import qualified Data.Set as Set
 
 data Name
   = Local Int
@@ -61,6 +62,14 @@ unify expected actual = case (out expected, out actual) of
   (Lambda i1 a1 b1, Lambda i2 a2 b2) | i1 == i2 -> Unification $ Lambda i2 (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
+
+
+freeVariables :: Term' -> Set.Set Name
+freeVariables = cata inExpression
+  where inExpression expression = case expression of
+          Variable name -> Set.singleton name
+          Lambda i t b -> Set.delete (Local i) b `Set.union` t
+          Application a b -> a `Set.union` b
 
 
 cata :: Functor f => (f a -> a) -> Term f -> a
