@@ -44,7 +44,7 @@ main = hspec $ do
     prop "lambdas are shadowing" $
       \ name t b -> freeVariables (Term (Lambda name t b)) `shouldSatisfy` Set.notMember (Local name)
 
-  describe "showLevel" $ do
+  describe "showsLevel" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (Term $ Application a (Term $ Application b c)) `shouldBe` show a ++ " (" ++ showsPrec 10 (Term $ Application b c) ")"
 

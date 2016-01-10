@@ -85,17 +85,17 @@ instance Eq1 Expression where
   eq1 = (==)
 
 instance Show Term' where
-  showsPrec n term = case out term of
-    Variable name -> shows name
-    Type -> showString "Type"
-    Implicit -> showString "Implicit"
-    Application a b -> showParen (n > 10) (showsPrec 10 a . showString " " . showsPrec 11 b)
-    Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . shows t  . showString " . " . shows body
-    Lambda _ t body -> showString "λ _ : " . shows t  . showString " . " . shows body
-    -- Lambda _ t body -> (shows t " → " ++ body, 0)
+  showsPrec = showLevel False
 
-showLevel :: Bool -> Term' -> ShowS
-showLevel = const . shows
+showsLevel :: Bool -> Int -> Term' -> ShowS
+showsLevel isType n term = case out term of
+  Variable name -> shows name
+  Type -> showString "Type"
+  Implicit -> showString "Implicit"
+  Application a b -> showParen (n > 10) (showsPrec 10 a . showString " " . showsPrec 11 b)
+  Lambda i t body | Set.member (Local i) (freeVariables body) -> showString "λ " . shows (Local i) . showString " : " . shows t  . showString " . " . shows body
+  Lambda _ t body -> showString "λ _ : " . shows t  . showString " . " . shows body
+  -- Lambda _ t body -> (shows t " → " ++ body, 0)
 
 instance Eq1 f => Eq (Term f) where
   a == b = out a `eq1` out b
