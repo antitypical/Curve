@@ -127,9 +127,6 @@ showsLevelPrec isType n term = case out term of
 showsLevel :: Bool -> Term' -> ShowS
 showsLevel level = showsLevelPrec level 0
 
-showsTerm :: Term' -> ShowS
-showsTerm = showsLevel False
-
 showsType :: Term' -> ShowS
 showsType = showsLevel True
 
