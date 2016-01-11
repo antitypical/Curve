@@ -96,3 +96,5 @@ main = hspec $ do
   where flipUnification (Conflict a b) = Conflict b a
         flipUnification (Unification out) = Unification $ flipUnification <$> out
         flipUnification otherwise = otherwise
+
+        replace needle withTerm inHaystack = if needle == inHaystack then withTerm else Term $ replace needle withTerm <$> out inHaystack
