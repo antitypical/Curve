@@ -126,8 +126,7 @@ alphaEquivalent :: Term' -> Term' -> Bool
 alphaEquivalent a b | a == b = True
 alphaEquivalent (Term (Variable _)) (Term (Variable _)) = True
 alphaEquivalent (Term (Application a1 b1)) (Term (Application a2 b2)) = alphaEquivalent a1 a2 && alphaEquivalent b1 b2
-alphaEquivalent (Term (Lambda i1 t1 b1)) (Term (Lambda i2 t2 b2)) = alphaEquivalent t1 t2 && alphaEquivalent b1 b2
-  where fresh = pick (Set.union (freeVariables b1) (freeVariables b2))
+alphaEquivalent (Term (Lambda _ t1 b1)) (Term (Lambda _ t2 b2)) = alphaEquivalent t1 t2 && alphaEquivalent b1 b2
 alphaEquivalent _ _ = False
 
 
