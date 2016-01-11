@@ -38,10 +38,10 @@ main = hspec $ do
       \ a b -> a `unify` b `shouldBe` flipUnification (b `unify` a)
 
     prop "expected term is recoverable" $ forAll (replace implicit type' <$> arbitrary) $
-      \ a b -> expected (a `unify` b) `shouldBe` a
+      \ a b -> expected (a `unify` b) `shouldSatisfy` alphaEquivalent a
 
     prop "actual term is recoverable" $ forAll (replace implicit type' <$> arbitrary) $
-      \ a b -> actual (a `unify` b) `shouldBe` b
+      \ a b -> actual (a `unify` b) `shouldSatisfy` alphaEquivalent b
 
   describe "freeVariables" $ do
     prop "variables are free in themselves" $
