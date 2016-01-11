@@ -14,7 +14,7 @@ instance Arbitrary (Term Expression) where
               (4, pure (Term Type))
             : (4, pure (Term Implicit))
             : (1, Term <$> (Application <$> inScope names <*> inScope names))
-            : (1, Term <$> (Lambda (length names) <$> inScope names <*> inScope (Local (length names) : names)))
+            : (2, Term <$> (Lambda (length names) <$> inScope names <*> inScope (Local (length names) : names)))
             : ((,) 4 . pure . Term . Variable <$> names)
 
   shrink term = filter (/= term) $ case out term of
