@@ -43,6 +43,10 @@ main = hspec $ do
     prop "actual term is recoverable" $
       \ a b -> actual (a `unify` replace implicit type' b) `shouldSatisfy` alphaEquivalent (replace implicit type' b)
 
+  describe "alphaEquivalent" $ do
+    prop "identical terms are alpha-equivalent" $
+      \ a -> a `alphaEquivalent` a `shouldBe` True
+
   describe "freeVariables" $ do
     prop "variables are free in themselves" $
       \ name -> freeVariables (variable name) `shouldBe` Set.singleton name
