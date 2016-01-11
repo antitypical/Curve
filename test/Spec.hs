@@ -73,6 +73,13 @@ main = hspec $ do
     prop "shadowed variables are not renamed" $
       \ i t -> rename (Local i) (Local $ i + 1) (Term $ Lambda i t (local i)) `shouldBe` (Term $ Lambda i (rename (Local i) (Local $ i + 1) t) (local i))
 
+  describe "prime" $ do
+    prop "injectivity over locals" $
+      \ i -> prime (Local i) `shouldNotBe` Local i
+
+    prop "injectivity over globals" $
+      \ s -> prime (Global s) `shouldNotBe` Global s
+
   describe "DSL" $ do
     prop "apply associates leftwards" $
       \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` (c :: Term')
