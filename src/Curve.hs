@@ -156,8 +156,8 @@ unify expected actual = case (out expected, out actual) of
 
   (Variable n1, Variable n2) | n1 == n2 -> variable n2
   (Application a1 b1, Application a2 b2) -> unify a1 a2 `apply` unify b1 b2
-  (Lambda i1 a1 b1, Lambda i2 a2 b2) -> Unification $ Lambda i1 (unify a1 a2) (rename fresh i1 (unify (rename i1 fresh b1) (rename i2 fresh b2)))
-    where fresh = 0
+  (Lambda i1 a1 b1, Lambda i2 a2 b2) -> Unification $ Lambda i1 (unify a1 a2) (rename fresh (Local i1) (unify (rename (Local i1) fresh b1) (rename (Local i2) fresh b2)))
+    where fresh = pick (Set.union (freeVariables b1) (freeVariables b2))
 
   _ -> Conflict expected actual
 
