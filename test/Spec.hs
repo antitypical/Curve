@@ -69,6 +69,10 @@ main = hspec $ do
     it "should format the identity function appropriately" $
       show (Term $ Lambda 1 type' $ Term $ Lambda 0 (local 1) (local 0)) `shouldBe` "λ b : Type . λ a : b . a"
 
+  describe "rename" $ do
+    prop "shadowed variables are not renamed" $
+      \ i t -> rename (Local i) (Local $ i + 1) (Term $ Lambda i t (local i)) `shouldBe` (Term $ Lambda i (rename (Local i) (Local $ i + 1) t) (local i))
+
   describe "DSL" $ do
     prop "apply associates leftwards" $
       \ a b c -> a `apply` b `apply` c `shouldBe` (a `apply` b) `apply` (c :: Term')
