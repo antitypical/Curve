@@ -99,12 +99,11 @@ substitute name withTerm inScope = case unrollMaybe inScope of
 
 
 freeVariables :: Term' -> Set.Set Name
-freeVariables = cata inExpression
-  where inExpression expression = case expression of
-          Variable name -> Set.singleton name
-          Lambda i t b -> Set.delete (Local i) b `Set.union` t
-          Application a b -> a `Set.union` b
-          _ -> mempty
+freeVariables = cata $ \ expression -> case expression of
+  Variable name -> Set.singleton name
+  Lambda i t b -> Set.delete (Local i) b `Set.union` t
+  Application a b -> a `Set.union` b
+  _ -> mempty
 
 maxBoundVariable :: PartialUnroll r => r Expression -> Maybe Int
 maxBoundVariable = foldl maximal Nothing . unrollMaybe
