@@ -121,6 +121,9 @@ maxBoundVariable = foldl maximal Nothing . unrollMaybe
         maximal into (Application a b) = max into $ max (maxBoundVariable a) (maxBoundVariable b)
         maximal into _ = into
 
+
+-- Naming
+
 freshBy :: (Name -> Bool) -> Name -> Name
 freshBy isUsed name = if isUsed name then freshBy isUsed (prime name) else name
 
