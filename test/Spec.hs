@@ -40,6 +40,9 @@ main = hspec $ do
     prop "expected term is recoverable" $ forAll (replace implicit type' <$> arbitrary) $
       \ a b -> expected (a `unify` b) `shouldBe` a
 
+    prop "actual term is recoverable" $ forAll (replace implicit type' <$> arbitrary) $
+      \ a b -> actual (a `unify` b) `shouldBe` b
+
   describe "freeVariables" $ do
     prop "variables are free in themselves" $
       \ name -> freeVariables (variable name) `shouldBe` Set.singleton name
