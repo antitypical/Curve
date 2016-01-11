@@ -114,6 +114,9 @@ maxBoundVariable = foldl maximal Nothing . unrollMaybe
 freshBy :: (Name -> Bool) -> Name -> Name
 freshBy isUsed name = if isUsed name then freshBy isUsed (prime name) else name
 
+freshIn :: Set.Set Name -> Name -> Name
+freshIn names = freshBy (`Set.member` names)
+
 prime :: Name -> Name
 prime (Local i) = Local $ succ i
 prime (Global s) = Global $ s ++ "ʹ"
