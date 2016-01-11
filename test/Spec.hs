@@ -47,6 +47,9 @@ main = hspec $ do
     prop "identical terms are alpha-equivalent" $
       \ a -> a `alphaEquivalent` a `shouldBe` True
 
+    prop "free variables are alpha-equivalent" $
+      \ n -> variable n `alphaEquivalent` variable (prime n) `shouldBe` True
+
   describe "freeVariables" $ do
     prop "variables are free in themselves" $
       \ name -> freeVariables (variable name) `shouldBe` Set.singleton name
