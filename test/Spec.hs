@@ -71,7 +71,7 @@ main = hspec $ do
 
   describe "rename" $ do
     prop "shadowed variables are not renamed" $
-      \ i t body -> rename (Local i) (Local $ i + 1) (Term $ Lambda i t body) `shouldBe` (Term $ Lambda i (rename (Local i) (Local $ i + 1) t) body)
+      \ i t body -> let name = Local i in rename name (prime name) (Term $ Lambda i t body) `shouldBe` (Term $ Lambda i (rename name (prime name) t) body)
 
     prop "renaming is injective" $
       \ n term -> rename (prime n) n (rename n (prime n) term) `shouldBe` (term :: Term')
