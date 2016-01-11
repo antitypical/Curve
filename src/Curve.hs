@@ -111,6 +111,10 @@ maxBoundVariable = foldl maximal Nothing . unrollMaybe
         maximal into (Application a b) = max into $ max (maxBoundVariable a) (maxBoundVariable b)
         maximal into _ = into
 
+prime :: Name -> Name
+prime (Local i) = Local $ succ i
+prime (Global s) = Global $ s ++ "ʹ"
+
 
 -- Typechecking
 
