@@ -121,6 +121,9 @@ prime :: Name -> Name
 prime (Local i) = Local $ succ i
 prime (Global s) = Global $ s ++ "ʹ"
 
+pick :: Set.Set Name -> Name
+pick names = freshIn names (maximum $ Set.insert (Local 0) names)
+
 
 -- Typechecking
 
