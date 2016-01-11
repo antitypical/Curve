@@ -78,11 +78,11 @@ unified _ = Nothing
 
 -- Binding
 
-rename :: (Roll r, PartialUnroll r) => Int -> Int -> r Expression -> r Expression
+rename :: (Roll r, PartialUnroll r) => Name -> Name -> r Expression -> r Expression
 rename old new term | old == new = term
 rename old new term = case unrollMaybe term of
-  Just (Variable (Local name)) | name == old -> local new
-  Just (Lambda name t b) -> roll $ if name == old
+  Just (Variable name) | name == old -> variable new
+  Just (Lambda name t b) -> roll $ if Local name == old
     then Lambda name (rename old new t) b
     else Lambda name (rename old new t) (rename old new b)
   Just (Application a b) -> rename old new a `apply` rename old new b
