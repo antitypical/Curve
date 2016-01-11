@@ -70,7 +70,7 @@ main = hspec $ do
     prop "shows dependent function types with a binding arrow operator" $
       \ a n -> showsType (Term $ Lambda n a (local n)) "" `shouldBe` "(" ++ shows (Local n) " : " ++ showsType a ") → " ++ showsType (local n) ""
 
-    prop "parentheses left-nested non-dependent function types" $
+    prop "parenthesizes left-nested non-dependent function types" $
       \ a b c -> showsLevelPrec True 0 (Term $ Lambda 0 (Term $ Lambda 1 a b) c) "" `shouldBe` "(" ++ showsLevelPrec True 0 (Term $ Lambda 1 a b) ") → " ++ showsType c ""
 
     prop "pretty-prints Implicit as _ at any level and precedence" $
