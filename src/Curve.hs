@@ -75,6 +75,11 @@ unified :: Unification' -> Maybe Term'
 unified (Unification expression) = Term <$> traverse unified expression
 unified _ = Nothing
 
+expected :: Unification' -> Term'
+expected (Unification out) = Term $ expected <$> out
+expected (Conflict a _) = a
+expected _ = implicit
+
 
 -- Binding
 
