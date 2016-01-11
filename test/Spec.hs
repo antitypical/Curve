@@ -37,6 +37,9 @@ main = hspec $ do
     prop "symmetry" $
       \ a b -> a `unify` b `shouldBe` flipUnification (b `unify` a)
 
+    prop "expected term is recoverable" $ forAll (replace implicit type' <$> arbitrary) $
+      \ a b -> expected (a `unify` b) `shouldBe` a
+
   describe "freeVariables" $ do
     prop "variables are free in themselves" $
       \ name -> freeVariables (variable name) `shouldBe` Set.singleton name
