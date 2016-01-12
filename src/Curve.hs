@@ -164,6 +164,7 @@ check expected context term = case (out term, out expected) of
 
   (Application a b, Implicit) -> let a' = infer context a in case a' of
     Unification (Lambda _ from to) -> case unified from of
+      Just from -> applySubstitution (check from context b) to
       _ -> a' `apply` infer context b
     _ -> a' `apply` infer context b
 
