@@ -77,8 +77,11 @@ main = hspec $ do
     it "infers function types" $
       infer mempty (type' `lambda` id) `shouldBe` type' --> type'
 
-    it "infers pi types" $
+    it "infers identity’s type" $
       infer mempty (type' `lambda` \ a -> a `lambda` id) `shouldBe` (type' `lambda` \ a -> a --> a)
+
+    it "infers constant’s type" $
+      infer mempty (type' `lambda` \ a -> type' `lambda` \ b -> a `lambda` \ a' -> b `lambda` const a') `shouldBe` (type' `lambda` \ a -> type' `lambda` \ b -> a --> b --> a)
 
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
