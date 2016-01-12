@@ -107,8 +107,10 @@ substitute name withTerm inScope = case unrollMaybe inScope of
   Just (Application inA inB) -> roll $ Application (substitute name withTerm inA) (substitute name withTerm inB)
   _ -> inScope
 
-applySubstitution :: Roll r => r Expression -> r Expression -> r Expression
-applySubstitution _ inScope = inScope
+applySubstitution :: (Roll r, PartialUnroll r) => r Expression -> r Expression -> r Expression
+applySubstitution withTerm body = case unrollMaybe body of
+  Just (Lambda i _ inScope) -> substitute i withTerm inScope
+  _ -> body
 
 
 freeVariables :: Term' -> Set.Set Name
