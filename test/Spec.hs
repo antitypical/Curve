@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleInstances #-}
+import qualified Data.Map as Map
 import qualified Data.Set as Set
 import Test.Hspec
 import Test.Hspec.QuickCheck
@@ -63,6 +64,9 @@ main = hspec $ do
 
     prop "infers free variables as conflicts" $
       \ name -> infer mempty (variable name) `shouldBe` Conflict implicit implicit
+
+    prop "infers bound variables from the context" $
+      \ name t -> infer (Map.singleton name t) (variable name) `shouldBe` into t
 
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
