@@ -159,6 +159,9 @@ check expected context term = case (out term, out expected) of
 
   (Variable name, Implicit) -> maybe (Conflict implicit implicit) into (Map.lookup name context)
 
+  (Application a b, Implicit) -> case infer context a of
+    other -> other `apply` infer context b
+
   (Lambda i t body, Implicit) -> unify t type' `lambda` \ v -> substitute i v (into body)
 
   (_, Implicit) -> Conflict implicit implicit
