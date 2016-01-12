@@ -57,6 +57,10 @@ main = hspec $ do
     prop "lambdas are shadowing" $
       \ name t b -> freeVariables (Term (Lambda name t b)) `shouldSatisfy` Set.notMember (Local name)
 
+  describe "check" $ do
+    prop "checking against implicit is inference" $
+      \ term -> check implicit mempty term `shouldBe` infer mempty term
+
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
