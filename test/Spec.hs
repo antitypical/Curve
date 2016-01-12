@@ -71,6 +71,9 @@ main = hspec $ do
     prop "checks inferred types" $
       \ name t -> check t (Map.singleton name t) (variable name) `shouldBe` into t
 
+    prop "infers function types" $
+      \ i -> infer mempty (Term $ Lambda i type' type') `shouldBe` type' --> type'
+
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
