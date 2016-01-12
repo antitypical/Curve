@@ -77,6 +77,9 @@ main = hspec $ do
     it "infers function types" $
       infer mempty (type' `lambda` id) `shouldBe` type' --> type'
 
+    it "infers pi types" $
+      infer mempty (type' `lambda` \ a -> a `lambda` id) `shouldBe` (type' `lambda` \ a -> a --> a)
+
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
