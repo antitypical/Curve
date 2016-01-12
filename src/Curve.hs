@@ -171,7 +171,7 @@ check expected context term = case (out term, out expected) of
   (Lambda i t body, Implicit) -> (check type' context t >> into t) `lambda` \ v -> substitute i v (infer (Map.insert (Local i) t context) body)
 
   (_, Implicit) -> Conflict implicit implicit
-  
+
   (Lambda {}, Type) -> check (type' --> type') context term
 
   (_, _) -> let unification = infer context term in
