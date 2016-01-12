@@ -168,7 +168,9 @@ check expected context term = case (out term, out expected) of
       _ -> a' `apply` infer context b
     _ -> a' `apply` infer context b
 
-  (Lambda i t body, Implicit) -> check type' context t `lambda` \ v -> substitute i v (infer (Map.insert (Local i) t context) body)
+  (Lambda i t body, Implicit) -> (check type' context t >> into t) `lambda` \ v -> substitute i v (infer (Map.insert (Local i) t context) body)
+    where (>>) (Unification _) b = b
+          (>>) a _ = a
 
   (_, Implicit) -> Conflict implicit implicit
   (_, _) -> let unification = infer context term in
