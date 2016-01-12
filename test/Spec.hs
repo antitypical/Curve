@@ -68,6 +68,9 @@ main = hspec $ do
     prop "infers bound variables from the context" $
       \ name t -> infer (Map.singleton name t) (variable name) `shouldBe` into t
 
+    prop "checks inferred types" $
+      \ name t -> check t (Map.singleton name t) (variable name) `shouldBe` into t
+
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
