@@ -78,12 +78,10 @@ unified _ = Nothing
 expected :: Unification' -> Term'
 expected (Unification out) = Term $ expected <$> out
 expected (Conflict a _) = a
-expected _ = implicit
 
 actual :: Unification' -> Term'
 actual (Unification out) = Term $ actual <$> out
 actual (Conflict _ b) = b
-actual _ = implicit
 
 
 -- Binding
