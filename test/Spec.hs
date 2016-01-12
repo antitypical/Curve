@@ -61,6 +61,9 @@ main = hspec $ do
     prop "checking against implicit is inference" $
       \ term -> check implicit mempty term `shouldBe` infer mempty term
 
+    prop "infers free variables as conflicts" $
+      \ name -> infer mempty (variable name) `shouldBe` Conflict implicit implicit
+
   describe "showsLevelPrec" $ do
     prop "parenthesizes right-nested applications" $
       \ a b c -> show (apply a (apply b c)) `shouldBe` showsPrec 10 a " (" ++ showsPrec 10 (apply b c :: Term') ")"
