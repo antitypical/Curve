@@ -173,6 +173,9 @@ check expected context term = case (out term, out expected) of
           a >> _ = a
 
   (_, Implicit) -> Conflict implicit implicit
+  
+  (Lambda {}, Type) -> check (type' --> type') context term
+
   (_, _) -> let unification = infer context term in
     maybe unification (unify expected) $ unified unification
 
