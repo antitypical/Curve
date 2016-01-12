@@ -107,6 +107,9 @@ substitute name withTerm inScope = case unrollMaybe inScope of
   Just (Application inA inB) -> roll $ Application (substitute name withTerm inA) (substitute name withTerm inB)
   _ -> inScope
 
+applySubstitution :: Roll r => r Expression -> r Expression -> r Expression
+applySubstitution _ inScope = inScope
+
 
 freeVariables :: Term' -> Set.Set Name
 freeVariables = cata $ \ expression -> case expression of
