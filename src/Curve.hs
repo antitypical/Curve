@@ -1,9 +1,10 @@
-{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances #-}
+{-# LANGUAGE DeriveFunctor, DeriveFoldable, DeriveTraversable, FlexibleInstances, UndecidableInstances #-}
 module Curve where
 
 import Data.Functor.Classes
 import qualified Data.List as List
 import qualified Data.Set as Set
+import qualified Data.Map as Map
 
 data Name
   = Local Int
@@ -27,36 +28,36 @@ type Unification' = Unification Expression
 
 -- DSL for constructing terms
 
-type' :: Term'
-type' = Term Type
+type' :: Roll r => r Expression
+type' = roll Type
 
-implicit :: Term'
-implicit = Term Implicit
+implicit :: Roll r => r Expression
+implicit = roll Implicit
 
-variable :: Name -> Term'
-variable = Term . Variable
+variable :: Roll r => Name -> r Expression
+variable = roll . Variable
 
-local :: Int -> Term'
+local :: Roll r => Int -> r Expression
 local = variable . Local
 
-global :: String -> Term'
+global :: Roll r => String -> r Expression
 global = variable . Global
 
 infixl 9 `apply`
 
-apply :: Term' -> Term' -> Term'
-apply a = Term . Application a
+apply :: Roll r => r Expression -> r Expression -> r Expression
+apply a = roll . Application a
 
 infixr `lambda`
 
-lambda :: Term' -> (Term' -> Term') -> Term'
-lambda t f = Term $ Lambda i t body
+lambda :: (Roll r, PartialUnroll r) => r Expression -> (r Expression -> r Expression) -> r Expression
+lambda t f = roll $ Lambda i t body
   where i = maybe 0 succ $ maxBoundVariable body
-        body = f (Term $ Variable $ Local i)
+        body = f (local i)
 
 infixr -->
 
-(-->) :: Term' -> Term' -> Term'
+(-->) :: (Roll r, PartialUnroll r) => r Expression -> r Expression -> r Expression
 a --> b = a `lambda` const b
 
 infixr `pi`
@@ -72,29 +73,114 @@ into term = Unification $ into <$> out term
 
 unified :: Unification' -> Maybe Term'
 unified (Unification expression) = Term <$> traverse unified expression
-unified (Conflict _ _) = Nothing
+unified _ = Nothing
+
+expected :: Unification' -> Term'
+expected (Unification out) = Term $ expected <$> out
+expected (Conflict a _) = a
+
+actual :: Unification' -> Term'
+actual (Unification out) = Term $ actual <$> out
+actual (Conflict _ b) = b
 
 
 -- Binding
 
-rename :: Int -> Int -> Term' -> Term'
+rename :: (Roll r, PartialUnroll r) => Name -> Name -> r Expression -> r Expression
 rename old new term | old == new = term
-rename old new term = Term $ case out term of
-  Variable (Local name) | name == old -> Variable $ Local new
-  Lambda name t b -> if name == old
+rename old new term = case unrollMaybe term of
+  Just (Variable name) | name == old -> variable new
+  Just (Lambda name t b) -> roll $ if Local name == old
     then Lambda name (rename old new t) b
     else Lambda name (rename old new t) (rename old new b)
-  Application a b -> Application (rename old new a) (rename old new b)
-  other -> other
+  Just (Application a b) -> rename old new a `apply` rename old new b
+  _ -> term
 
-substitute :: Int -> Term' -> Term' -> Term'
-substitute name withTerm inScope = case out inScope of
-  Variable (Local n) | n == name -> withTerm
-  Lambda n inType inBody -> if n == name
-    then Term $ Lambda n (substitute name withTerm inType) inBody
-    else Term $ Lambda n (substitute name withTerm inType) (substitute name withTerm inBody)
-  Application inA inB -> Term $ Application (substitute name withTerm inA) (substitute name withTerm inB)
+substitute :: (Roll r, PartialUnroll r) => Int -> r Expression -> r Expression -> r Expression
+substitute name withTerm inScope = case unrollMaybe inScope of
+  Just (Variable (Local n)) | n == name -> withTerm
+  Just (Lambda n inType inBody) -> if n == name
+    then roll $ Lambda n (substitute name withTerm inType) inBody
+    else roll $ Lambda n (substitute name withTerm inType) (substitute name withTerm inBody)
+  Just (Application inA inB) -> roll $ Application (substitute name withTerm inA) (substitute name withTerm inB)
   _ -> inScope
+
+applySubstitution :: (Roll r, PartialUnroll r) => r Expression -> r Expression -> r Expression
+applySubstitution withTerm body = case unrollMaybe body of
+  Just (Lambda i _ inScope) -> substitute i withTerm inScope
+  _ -> body
+
+
+freeVariables :: Term' -> Set.Set Name
+freeVariables = cata $ \ expression -> case expression of
+  Variable name -> Set.singleton name
+  Lambda i t b -> Set.delete (Local i) b `Set.union` t
+  Application a b -> a `Set.union` b
+  _ -> mempty
+
+maxBoundVariable :: PartialUnroll r => r Expression -> Maybe Int
+maxBoundVariable = foldl maximal Nothing . unrollMaybe
+  where maximal into (Lambda i t _) = max into $ max (Just i) (maxBoundVariable t)
+        maximal into (Application a b) = max into $ max (maxBoundVariable a) (maxBoundVariable b)
+        maximal into _ = into
+
+
+alphaEquivalent :: Term' -> Term' -> Bool
+alphaEquivalent a b | a == b = True
+alphaEquivalent (Term (Variable _)) (Term (Variable _)) = True
+alphaEquivalent (Term (Application a1 b1)) (Term (Application a2 b2)) = alphaEquivalent a1 a2 && alphaEquivalent b1 b2
+alphaEquivalent (Term (Lambda _ t1 b1)) (Term (Lambda _ t2 b2)) = alphaEquivalent t1 t2 && alphaEquivalent b1 b2
+alphaEquivalent _ _ = False
+
+
+-- Naming
+
+freshBy :: (Name -> Bool) -> Name -> Name
+freshBy isUsed name = if isUsed name then freshBy isUsed (prime name) else name
+
+freshIn :: Set.Set Name -> Name -> Name
+freshIn names = freshBy (`Set.member` names)
+
+prime :: Name -> Name
+prime (Local i) = Local $ succ i
+prime (Global s) = Global $ s ++ "ʹ"
+
+pick :: Set.Set Name -> Name
+pick names = freshIn names (maximum $ Set.insert (Local 0) names)
+
+
+-- Typechecking
+
+type Context = Map.Map Name Term'
+
+infer :: Context -> Term' -> Unification'
+infer = check implicit
+
+check :: Term' -> Context -> Term' -> Unification'
+check expected context term = case (out term, out expected) of
+  (Type, Implicit) -> Unification Type
+
+  (Variable name, Implicit) -> maybe (Conflict implicit implicit) into (Map.lookup name context)
+
+  (Application a b, Implicit) -> let a' = infer context a in case a' of
+    Unification (Lambda _ from to) -> case unified from of
+      Just from -> applySubstitution (check from context b) to
+      _ -> a' `apply` infer context b
+    _ -> a' `apply` infer context b
+
+  (Lambda i t body, Implicit) -> (check type' context t >> into t) `lambda` \ v -> substitute i v (infer (Map.insert (Local i) t context) body)
+
+  (_, Implicit) -> Conflict implicit implicit
+
+  (Lambda {}, Type) -> check (type' --> type') context term
+
+  (_, _) -> let unification = infer context term in
+    maybe unification (unify expected) $ unified unification
+  where Unification _ >> b = b
+        a >> _ = a
+
+
+-- Equality
 
 unify :: Term' -> Term' -> Unification'
 unify expected actual = case (out expected, out actual) of
@@ -103,36 +189,11 @@ unify expected actual = case (out expected, out actual) of
 
   (Type, Type) -> into expected
 
-  (Variable n1, Variable n2) | n1 == n2 -> Unification $ Variable n2
-  (Application a1 b1, Application a2 b2) -> Unification $ Application (unify a1 a2) (unify b1 b2)
-  (Lambda i1 a1 b1, Lambda i2 a2 b2) | i1 == i2 -> Unification $ Lambda i2 (unify a1 a2) (unify b1 b2)
+  (Variable _, Variable _) -> into expected
+  (Application a1 b1, Application a2 b2) -> unify a1 a2 `apply` unify b1 b2
+  (Lambda i a1 b1, Lambda _ a2 b2) -> Unification $ Lambda i (unify a1 a2) (unify b1 b2)
 
   _ -> Conflict expected actual
-
-
-freeVariables :: Term' -> Set.Set Name
-freeVariables = cata inExpression
-  where inExpression expression = case expression of
-          Variable name -> Set.singleton name
-          Lambda i t b -> Set.delete (Local i) b `Set.union` t
-          Application a b -> a `Set.union` b
-          _ -> mempty
-
-maxBoundVariable :: Term' -> Maybe Int
-maxBoundVariable = cata (\ expression -> case expression of
-  Lambda n t _ -> max (Just n) t
-  Application a b -> max a b
-  _ -> Nothing)
-
-
--- Recursion schemes
-
-cata :: Functor f => (f a -> a) -> Term f -> a
-cata f = f . fmap (cata f) . out
-
-para :: Functor f => (f (Term f, a) -> a) -> Term f -> a
-para f = f . fmap fanout . out
-  where fanout a = (a, para f a)
 
 
 -- Numerals
@@ -147,6 +208,23 @@ countDigits base i = 1 + floor (logBase (fromIntegral base) (fromIntegral $ abs 
 showNumeral :: Integral i => String -> i -> String
 showNumeral "" _ = ""
 showNumeral alphabet i = List.genericIndex alphabet <$> digits (List.genericLength alphabet) i
+
+
+-- Classes
+
+class Roll g where
+  roll :: f (g f) -> g f
+
+class Unroll r where
+  unroll :: r f -> f (r f)
+
+class PartialUnroll r where
+  unrollMaybe :: r f -> Maybe (f (r f))
+
+class Catamorphable r where
+  cata :: Functor f => (f a -> a) -> r f -> a
+
+  para :: Functor f => (f (r f, a) -> a) -> r f -> a
 
 
 -- Instances
@@ -193,3 +271,25 @@ instance Show Unification' where
   show (Unification out) = show out
   show (Conflict a b) = "Expected: " ++ show a ++ "\n"
                      ++ "  Actual: " ++ show b ++ "\n"
+
+instance Roll Term where
+  roll = Term
+
+instance Unroll Term where
+  unroll = out
+
+instance PartialUnroll Term where
+  unrollMaybe = Just . unroll
+
+instance Roll Unification where
+  roll = Unification
+
+instance Unroll r => Catamorphable r where
+  cata f = f . fmap (cata f) . unroll
+
+  para f = f . fmap fanout . unroll
+    where fanout a = (a, para f a)
+
+instance PartialUnroll Unification where
+  unrollMaybe (Unification expression) = Just expression
+  unrollMaybe _ = Nothing
